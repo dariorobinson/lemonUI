@@ -75,6 +75,8 @@ function LoginComponent() {
         loginButtonElement.setAttribute('class','btn btn-primary');
         });
         Login();
+        console.log("redirect to dashboard")
+        router.navigate('/dashboard');
     }
 
 }

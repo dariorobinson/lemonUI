@@ -9,7 +9,7 @@ let routes = [
         component: LoginComponent
     },
     {
-        pash: '/dashboard',
+        path: '/dashboard',
         component: DashboardComponent
     }
 ];

@@ -10,7 +10,7 @@ function DashboardComponent() {
 
         DashboardComponent.prototype.injectStyleSheet();
         DashboardComponent.prototype.injectTemplate(() => {
-            dashboardElement=document.getElementById('dashboard');
+            console.log("hello dashboard");
     });
 }
 }

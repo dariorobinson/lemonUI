@@ -53,6 +53,7 @@ function LoginComponent() {
             //So far 204 no content indicates a successful connection
             if (resp.status === 204) {
                 console.log(resp);
+                router.navigate('/dashboard');
             }
 
         } catch (e) {
@@ -75,8 +76,7 @@ function LoginComponent() {
         loginButtonElement.setAttribute('class','btn btn-primary');
         });
         Login();
-        console.log("redirect to dashboard")
-        router.navigate('/dashboard');
+
     }
 
 }

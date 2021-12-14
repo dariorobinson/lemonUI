@@ -18,12 +18,24 @@
 </head>
 
 <body>
-    <!-- decoration shapes -->
-    <div class="left-bar"></div><div class="right-bar"></div>
     <!-- Container containg the login window and a decoration shape behind it -->
     <div class="container_row">
-        <div id="app-root"></div>
+
+<div id="login-page">
+    <div id="login-console">
+        <div id="app-root">
+            <div id="login-form">
+                <h1> ~Lemonwire~</h1>
+                <div class='container'>
+                    <button  id="login" onclick="window.location.href='https://discord.com/api/oauth2/authorize?client_id=918521327130914886&redirect_uri=http%3A%2F%2F127.0.0.1%3A5500%2Findex.html&response_type=token&scope=identify';">Login with Discord</button>
+                </div>
+            </div>
+            <br/>
+        </div>
         <div class="square"></div>
+    </div>
+    <div class="left-bar"></div><div class="right-bar"></div>
+</div>
     </div>
 </body>
 </html>

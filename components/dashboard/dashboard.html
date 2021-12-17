@@ -3,7 +3,6 @@
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
   <div class="navbar-nav">
     <div class="nav-item text-nowrap">
       <a class="nav-link px-3" href="#">Sign out</a>
@@ -12,24 +11,31 @@
 </header>
 
 <div id="dashboardPage" style="display: flex;">  
-  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" style="margin-bottom:0;">
+    <div class="circle" style="height: 90px; width: 90px;">
+      <img src="./resources/discord.png" alt="photo-sub" style="width:80px;height:80px;">
+    </div>
     <div class="position-sticky pt-3">
       <ul class="list-unstyled ps-0">
+
         <li class="nav-item">
-          <h3><span>Playlists</span></h3>
+          <h3 style="color: #1C1E3F;"><span>Playlists</span></h3>
         </li>
+        <li>
+        <button type="button" class="btn btn-default" id="addMy"data-modal="modalOne">
+          +
+        </button>
+      </li>
         <li class="mb-1">
           <h4>
-          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true"
+                  >
             My Playlists
           </button>
-          <button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>add</button>
+          <!-- <button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>add</button> -->
           </h4>
-          <div class="collapse show" id="home-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <li><a href="#" class="link-dark rounded">Playlist1</a></li>
-              <li><a href="#" class="link-dark rounded">Playlist2</a></li>
-              <li><a href="#" class="link-dark rounded">Playlist3</a></li>
+          <div class="collapse show" id="mylist-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="songListName">
             </ul>
           </div>
         </li>
@@ -38,27 +44,51 @@
             Public Playlists
           </button>
           <div class="collapse" id="dashboard-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <li><a href="#" class="link-dark rounded">Playlist4</a></li>
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="publicListName">
+              <!-- <li><a href="#" class="link-dark rounded">Playlist4</a></li>
               <li><a href="#" class="link-dark rounded">Playlist5</a></li>
               <li><a href="#" class="link-dark rounded">Playlist6</a></li>
-              <li><a href="#" class="link-dark rounded">Playlist7</a></li>
+              <li><a href="#" class="link-dark rounded">Playlist7</a></li> -->
             </ul>
           </div>
       </ul>
     </div>
   </nav>
+<div class="modal modal-signin position-static d-block bg-secondary py-5" tabindex="-1" role="dialog" id="modalSignin">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-5 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <!-- <h5 class="modal-title">Modal title</h5> -->
+        <h2 class="fw-bold mb-0">Add to My Playlist</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
+      <div class="modal-body p-5 pt-0">
+        <form class="">
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control rounded-4" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput">Play List Name</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control rounded-4" id="floatingPassword" placeholder="Password">
+            <label >Description</label>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
   <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id='listContainer' style="background-color: white;" style="border-radius: 15%;">
     <h2>PlayListName</h2>
-    <button class="btn btn-primary" style="margin-left:10% ;"><span class="glyphicon glyphicon-search"></span>add</button>
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
+    <div style="margin-left: 50%;"><button class="btn btn-default"><span class="glyphicon glyphicon-search"></span><h4>+</h4></button></div>
+      <div style="background-color: #1C1E3F;">
+        <table class="table table-striped table-dark">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
-              <th scope="col">URL</th>
+              <th scope="col" style="width: 10%">Song Name</th>
+              <th scope="col" style="width: 20">Duration</th>
+              <th scope="col" style="width: 70%">URL</th>
             </tr>
           </thead>
           <tbody>
@@ -146,4 +176,15 @@
         </table>
       </div>
   </main>
+
+  <script>
+    function openForm() {
+      document.getElementById("popupForm").style.display = "block";
+    }
+    function closeForm() {
+      document.getElementById("popupForm").style.display = "none";
+    }
+  </script>
+  
 </div>
+

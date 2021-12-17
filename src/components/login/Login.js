@@ -24,6 +24,6 @@ function addSessionUser(e) {
 
     return (
         <>
-        <a href="https://discord.com/api/oauth2/authorize?client_id=918521327130914886&redirect_uri=localhost%3A3000%2Flogin&response_type=token&scope=identify">Click Me</a>
+        <a href="https://discord.com/api/oauth2/authorize?client_id=918521327130914886&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=token&scope=identify">Click Me</a>
         </>
         )}

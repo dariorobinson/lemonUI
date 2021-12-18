@@ -49,11 +49,14 @@ function LoginComponent() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(credentials)
-            });
+            })
             //So far 204 no content indicates a successful connection
             if (resp.status === 204) {
                 console.log(resp);
-
+                console.log(credentials)
+                window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
+                console.log(window.sessionStorage.getItem('authUser'));
+                router.navigate('/dashboard');
             }
 
         } catch (e) {
@@ -76,7 +79,9 @@ function LoginComponent() {
         loginButtonElement.setAttribute('class','btn btn-primary');
         });
         Login();
-        router.navigate('/dashboard');
+        
+
+
 
     }
 

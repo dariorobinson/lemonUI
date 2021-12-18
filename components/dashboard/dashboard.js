@@ -21,11 +21,11 @@ function DashboardComponent() {
 
     function openTheForm() {
         document.getElementById("popupForm").style.display = "block";
-      }
-      
-      function closeTheForm() {
+    }
+    
+    function closeTheForm() {
         document.getElementById("popupForm").style.display = "none";
-      }
+    }
 
     function newListPop(){
 
@@ -49,7 +49,7 @@ function DashboardComponent() {
                 }
             });
             //So far 204 no content indicates a successful connection
-            if (resp.status === 202) {
+            if (resp.status === 200) {
                 let data = await resp.json();
                 console.log(data);
             }
@@ -71,6 +71,13 @@ function DashboardComponent() {
             loadPublic();
             addPlayList("songListName");
             addPlayList("publicListName");
+
+            let userObject = sessionStorage.getItem('authUser');
+            let user = (JSON.parse(userObject));
+
+            console.log(userObject);
+            console.log(JSON.parse(userObject))
+            console.log(`Hello! ${user}`);
             // document.getElementById("addMy").addEventListener("click",newListPop());
             // let modal = document.getElementById('loginPopup');
             // if (event.target == modal) {

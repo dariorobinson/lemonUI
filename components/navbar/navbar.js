@@ -35,21 +35,7 @@ function NavbarComponent() {
     
     this.render = function() {
         injectStylesheet();
-        injectTemplate(() => {
-
-            document.getElementById('nav-to-login').addEventListener('click', () => {
-                router.navigate('/login')
-            });
-
-            document.getElementById('nav-to-register').addEventListener('click', () => {
-                router.navigate('/register')
-            });
-
-            document.getElementById('nav-to-dashboard').addEventListener('click', () => {
-                router.navigate('/dashboard')
-            });
-            
-        });
+        injectTemplate();
     }
 
 }

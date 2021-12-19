@@ -16,15 +16,15 @@ function LoginComponent() {
 
     async function Login(){       
         console.log("login invoked");
+        //initialize a credential field for login purpose later
+        let credentials;
         //parse token information from fragment indentifier
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
         
-        //initialize a credential field for login purpose later
-        let credentials;
         //if token missing raise error message
         if (!accessToken) {
-            return updateErrorMessage("Authorization Error: No Token founded in fragment")
+            return updateErrorMessage("Authorization Error: No Token founded in fragment");
         }
         //else if token occur: get user information
         try{//connect discord api
@@ -52,11 +52,10 @@ function LoginComponent() {
             })
             //So far 204 no content indicates a successful connection
             if (resp.status === 204) {
-                console.log(resp);
-                console.log(credentials)
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
-                console.log(window.sessionStorage.getItem('authUser'));
+                //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');
+                
             }
 
         } catch (e) {
@@ -72,13 +71,14 @@ function LoginComponent() {
 
         LoginComponent.prototype.injectStyleSheet();
         LoginComponent.prototype.injectTemplate(() => {
-
-        //assign the button to login button 
-        loginButtonElement = document.getElementById('login');
-        //using bootstrap button class style
-        loginButtonElement.setAttribute('class','btn btn-primary');
+            //assign the button to login button 
+            loginButtonElement = document.getElementById('login');
+            //using bootstrap button class style
+            loginButtonElement.setAttribute('class','btn btn-primary');
         });
         Login();
+
+        
         
 
 

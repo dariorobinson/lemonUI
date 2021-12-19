@@ -1,5 +1,5 @@
 import { ViewComponent } from "../view.js";
-import router from '../../app.js';
+import NavbarComponent from "../navbar/navbar.js";
 
 
 
@@ -7,39 +7,171 @@ DashboardComponent.prototype = new ViewComponent('dashboard');
 function DashboardComponent() {
 
     let publicPlaylists;
+    //display component variables
+    let addNewListBtn;
+    let closeNewListBtn;
+    let submitNewListBtn;
+    let popupNewList;
+    let addNewSongBtn;
+    let closeNewSongBtn;
+    let submitNewSongBtn;
+    let popupNewSong;
 
-    function addPlayList(containername){
-        let listContainer=document.getElementById(containername);
-        const output=[];
-        songlists.forEach((currentList)=>{
-            output.push(`
-            <h6><li><a href="#" class="link-dark rounded">${currentList.playlist_name}</a></li></h6>
-            `)
-        })
-        listContainer.innerHTML=output.join('');
-    }
+    let selectedPlaylist;
+    //input field variables
 
-    function openTheForm() {
-        document.getElementById("popupForm").style.display = "block";
+
+    //Getting Session Username and display on sidebar
+    function setUsername(username){
+        let usernameTag=document.getElementById("username");
+        usernameTag.innerHTML=username;
     }
-    
-    function closeTheForm() {
-        document.getElementById("popupForm").style.display = "none";
+  
+
+    //Modularize adding event listener process
+    function buttonSetting(){
+        //For adding new playlist pop up
+        addNewListBtn=document.getElementById("addMyBtn");
+        addNewListBtn.addEventListener("click",newListPop);
+        closeNewListBtn=document.getElementById("newListClose");
+        closeNewListBtn.addEventListener("click",newListHide);
+        submitNewListBtn=document.getElementById("submitNewListBtn");
+        submitNewListBtn.addEventListener("click",addNewPlaylist);
+        //For adding new song pop up
+        addNewSongBtn=document.getElementById("addNewSongsBtn");
+        addNewSongBtn.addEventListener("click",newSongPop);
+        closeNewSongBtn=document.getElementById("newSongClose");
+        closeNewSongBtn.addEventListener("click",newSongHide);
+        submitNewSongBtn=document.getElementById("submitNewSongBtn");
+        submitNewSongBtn.addEventListener("click",addSongs);
+        
+    }
+    //__________________Button Event Section_____________________
+    function newListHide() {
+        popupNewList=document.getElementById("addToMyList");
+        popupNewList.style.display='none';
     }
 
     function newListPop(){
-
+        popupNewList=document.getElementById("addToMyList");
+        popupNewList.style.display='block';
     }
+    function newSongHide() {
+        popupNewSong=document.getElementById("addSongs");
+        popupNewSong.style.display='none';
+    }
+
+    function newSongPop(){
+        popupNewSong=document.getElementById("addSongs");
+        popupNewSong.style.display='block';
+    }
+
 
     function addSongs(){
+        console.log("adding in progress....")
+        let newSongNameField = document.getElementById('NewSongNameInput');
+        let newSongName=newSongNameField.value;
+        let newDurationField=document.getElementById('NewDurationInput');
+        let newDuration=newDurationField.value;
+        let newURLField=document.getElementById("NewSongURLInput");
+        let newURL=newURLField.value;
+        
+        if(newURL){
+            let exist=false;
+            //check if playlist name occupied
+            selectedPlaylist.songs.forEach((a)=>{if(a.song_url==newURL)exist=true;});
+            if(!exist){
+                    console.log(selectedPlaylist);
+                    selectedPlaylist.songs.push(
+                        {
+                            song_url:newURL,
+                            song_name: newSongName,
+                            duration: newDuration
+                        }
+                    );
+                    loadSongs();                
+                }      
+            }
+            popupNewSong=document.getElementById("addSongs");
+            popupNewSong.style.display='none';
 
     }
 
-    function loading(){
-        //TODO: need API load playlist feature
+    function loadSongs(){
+        console.log("loading songs");
+        // let listN=document.getElementById("playlistname");
+        // listN.innerHTML=selectedPlaylist.name;
+        let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
+        console.log(songsContainer);
+        const output=[];
+        selectedPlaylist.songs.forEach((a)=>{
+            output.push(`
+            <tr>
+                <td>${a.song_name}</td>
+                <td>${a.duration}</td>
+                <td>${a.song_url}</td>
+            </tr>
+            `)
+        });
+        songsContainer.innerHTML=output.join('');
     }
 
+
+    //Take a playlist[] and a target HTML playlist container to display all available playlists
+    function loadPlayList(containername, sourceList){
+        let listContainer=document.getElementById(containername);
+        const output=[];
+        sourceList.forEach((currentList)=>{
+            output.push(`
+            <li><h6><a href="#" class="link-dark rounded">${currentList.name}</a></h6></li>
+            `)})
+        listContainer.innerHTML=output.join('');
+        //add Event Listener to every playlist name
+        listContainer.addEventListener('click', e => {
+            // Obtain the target of the click event from the Event object
+            let eventTarget = e.target;
+            console.log(eventTarget.innerHTML);
+            // assign selectedPlaylist for display
+            songlists.forEach((e)=>{
+                    if(e.name==eventTarget.innerHTML){selectedPlaylist=e;}
+                });
+            loadSongs();
+        });
+        
+    }
+    //Add and submit new playList
+    function addNewPlaylist(){
+        console.log("adding in progress....")
+        let newPlaylistnameField = document.getElementById('NewListNameInput');
+        let newListName=newPlaylistnameField.value;
+        let newPlaylistDescriptionField=document.getElementById('DescriptionInput');
+        let newListDescription=newPlaylistDescriptionField.value;
+        let newListId=Date.now().toString();
+        console.log("playlistname: "+newListName+" - description"+newListDescription);
+        //Check if mandatory info:newListName occur
+        if(newListName){
+            let exist=false;
+            //check if playlist name occupied
+            songlists.forEach((a)=>{if(a.name==newListName)exist=true;});
+            if(!exist){
+                songlists.push(
+                    {
+                        playlist_id : newListId,
+                        name : newListName,
+                        description : newListDescription,
+                        access_type : 1,
+                        songs:[]
+                    }
+                )
+                console.log(songlists);
+                loadPlayList("songListName",songlists);                
+            }      
+        }
+        popupNewList=document.getElementById("addToMyList");
+        popupNewList.style.display='none';
+    }
     async function loadPublic(){  
+        console.log("loading public playlist");
         try {
             //try to communicate with public list
             let resp = await fetch('http://localhost:5000/lemon/playlists/public', {
@@ -48,10 +180,12 @@ function DashboardComponent() {
                     'Content-Type': 'application/json'
                 }
             });
-            //So far 204 no content indicates a successful connection
-            if (resp.status === 200) {
+            if (resp.status === 202) {
                 let data = await resp.json();
-                console.log(data);
+                console.log("here is the public list "+data);
+                let publicPlaylists=data;
+                console.log(publicPlaylists);
+                loadPlayList("publicListName",publicPlaylists);
             }
 
         } catch (e) {
@@ -67,31 +201,28 @@ function DashboardComponent() {
 
         DashboardComponent.prototype.injectStyleSheet();
         DashboardComponent.prototype.injectTemplate(() => {
+            // NavbarComponent.render();
             console.log("hello dashboard");
             loadPublic();
-            addPlayList("songListName");
-            addPlayList("publicListName");
-
+            loadPlayList("songListName",songlists);
             let userObject = sessionStorage.getItem('authUser');
             let user = (JSON.parse(userObject));
-
-            console.log(userObject);
-            console.log(JSON.parse(userObject))
-            console.log(`Hello! ${user}`);
-            // document.getElementById("addMy").addEventListener("click",newListPop());
-            // let modal = document.getElementById('loginPopup');
-            // if (event.target == modal) {
-            //     closeForm();
-            // }
-
-    });
-}
+            setUsername(user.username);
+            //Button Setting
+            buttonSetting();
+        });
+        
+    }
 }
 
+
+
+
+//Hard coded sample 
 let songlists=[
     {
         playlist_id : "1111",
-        playlist_name : "playlist1",
+        name : "playlistTest",
         description : "This is a playlist of relaxing music",
         access_type : 1,
         songs:[
@@ -104,12 +235,87 @@ let songlists=[
                 song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
                 song_name: "song2",
                 duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song3",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song4",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song5",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song6",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song7",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song8",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song9",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song9",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song10",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song11",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song12",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song13",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song14",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song15",
+                duration: "2:30"
+            },
+            {
+                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
+                song_name: "song16",
+                duration: "2:30"
             }
         ]        
     },
     {
         playlist_id : "2222",
-        playlist_name : "playlist2",
+        name : "playlist2",
         description : "This is a playlist of relaxing music",
         access_type : 1,
         songs:[
@@ -127,7 +333,7 @@ let songlists=[
     },
     {
         playlist_id : "3333",
-        playlist_name : "playlist3",
+        name : "playlist3",
         description : "This is a playlist of relaxing music",
         access_type : 1,
         songs:[

@@ -52,6 +52,7 @@ function LoginComponent() {
             })
             //So far 204 no content indicates a successful connection
             if (resp.status === 204) {
+                console.log(resp.headers);
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
                 //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');

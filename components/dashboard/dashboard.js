@@ -62,8 +62,10 @@ function DashboardComponent() {
     }
 
     function newSongPop(){
-        popupNewSong=document.getElementById("addSongs");
-        popupNewSong.style.display='block';
+        if(selectedPlaylist){
+            popupNewSong=document.getElementById("addSongs");
+            popupNewSong.style.display='block';
+        }
     }
 
 
@@ -140,7 +142,7 @@ function DashboardComponent() {
         
     }
     //Add and submit new playList
-    function addNewPlaylist(){
+    async function addNewPlaylist(){
         console.log("adding in progress....")
         let newPlaylistnameField = document.getElementById('NewListNameInput');
         let newListName=newPlaylistnameField.value;
@@ -152,24 +154,48 @@ function DashboardComponent() {
         if(newListName){
             let exist=false;
             //check if playlist name occupied
+            let tempList={
+                name: newListName,
+                description: newListDescription,
+                access: "PUBLIC"
+            }
             songlists.forEach((a)=>{if(a.name==newListName)exist=true;});
-            if(!exist){
-                songlists.push(
-                    {
-                        playlist_id : newListId,
-                        name : newListName,
-                        description : newListDescription,
-                        access_type : 1,
-                        songs:[]
+            if(!exist){ 
+                try {
+
+                    let resp = await fetch('http://localhost:5000/lemon/playlists', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(tempList)
+                    })
+                    if (resp.status === 201) {
+                        console.log("OK");
+                        songlists.push(
+                            {
+                                playlist_id : newListId,
+                                name : newListName,
+                                description : newListDescription,
+                                access_type : 1,
+                                songs:[]
+                            }
+                        )
+                        console.log(songlists);     
+                        loadPlayList("songListName",songlists);                         
                     }
-                )
-                console.log(songlists);
-                loadPlayList("songListName",songlists);                
+        
+                } catch (e) {
+                    console.error(e);
+                    updateErrorMessage('Connection error!');
+                }         
             }      
         }
         popupNewList=document.getElementById("addToMyList");
         popupNewList.style.display='none';
     }
+
+
     async function loadPublic(){  
         console.log("loading public playlist");
         try {

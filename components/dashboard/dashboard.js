@@ -74,6 +74,8 @@ function DashboardComponent() {
         //List button fetching API to get playlists
         publicListBtn=document.getElementById("PublicListBtn");
         publicListBtn.addEventListener("click",loadPublic);
+
+
         //For adding new playlist pop up
         addNewListBtn=document.getElementById("addMyBtn");
         addNewListBtn.addEventListener("click",newListPop);
@@ -81,6 +83,8 @@ function DashboardComponent() {
         closeNewListBtn.addEventListener("click",newListHide);
         submitNewListBtn=document.getElementById("submitNewListBtn");
         submitNewListBtn.addEventListener("click",addNewPlaylist);
+
+        
         //For adding new song pop up
         addNewSongBtn=document.getElementById("addNewSongsBtn");
         addNewSongBtn.addEventListener("click",newSongPop);

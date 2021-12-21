@@ -105,6 +105,56 @@ function DashboardComponent() {
         }
     }
 
+    //_____________Song Functionality_______________
+    async function getYTData(url){
+
+
+        // First do a YT search in order to get the video's title
+        $.ajax({
+            type: 'GET',
+            url: 'https://www.googleapis.com/youtube/v3/search',
+            data: {
+                key: 'AIzaSyAfCwtkvz55dNMTBE0uGiGitaMdRf9Erjg',
+                q: url,
+                maxResults: 1,
+                type: 'video'
+            },
+            success: function(data){
+                songDetails = getDuration(data);
+                songData = {title:songDetails.title, duration:songDetails.duration, url:url};
+                console.log(songData);
+                return songData;
+            },
+            error: function(response){
+                console.log("Request to pull youtube search failed...");
+            }
+        })
+    }
+
+    function getDuration(titleData){
+        //let respo = await fetch()
+        // Take the data from the previous search and use it to get the duration
+        $.ajax({
+            type: 'GET',
+            url: 'https://www.googleapis.com/youtube/v3/videos',
+            data: {
+                key: 'AIzaSyAfCwtkvz55dNMTBE0uGiGitaMdRf9Erjg',
+                id: titleData.items[0].id,
+                part: contentDetails
+            },
+            success: function(data){
+                // Const to hold the values we care about
+                console.log(data.items[0].contentDetails.duration);
+                songDetails = {title:titleData.items[0].snippet.title, duration:data.items[0].contentDetails.duration};
+                console.log(songDetails);
+                return songDetails;
+            },
+            error: function(response){
+                console.log("Request to pull youtube video failed...");
+            }
+        })
+    }
+
 
     function addSongs(){
         console.log("adding in progress....")
@@ -121,9 +171,10 @@ function DashboardComponent() {
             selectedPlaylist.songs.forEach((a)=>{if(a.song_url==newURL)exist=true;});
             if(!exist){
                     console.log(selectedPlaylist);
+                    //let newSong = getYTData(newURL);
                     selectedPlaylist.songs.push(
                         {
-                            song_url:newURL,
+                            song_url:newUrl,
                             song_name: newSongName,
                             duration: newDuration
                         }
@@ -135,6 +186,11 @@ function DashboardComponent() {
             popupNewSong.style.display='none';
 
     }
+
+    
+
+
+
 
     function loadSongs(){
         console.log("loading songs");
@@ -155,6 +211,8 @@ function DashboardComponent() {
         songsContainer.innerHTML=output.join('');
     }
 
+
+    // ___________________________________ PLAYLIST LOGIC ______________________________________________
 
     //Take a playlist[] and a target HTML playlist container to display all available playlists
     function loadPlayList(containername, sourceList){

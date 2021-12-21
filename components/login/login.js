@@ -21,6 +21,7 @@ function LoginComponent() {
         //parse token information from fragment indentifier
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
+
         
         //if token missing raise error message
         if (!accessToken) {

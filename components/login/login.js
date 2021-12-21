@@ -36,7 +36,7 @@ function LoginComponent() {
             //obtain repsonse and save credentials
             let result=await resp.json();
             const {id, username, discriminator} = result;
-            credentials={"id":id, "username":username,"discriminator":discriminator};
+            credentials={"id":id, "username":username,"discriminator":discriminator,"token":undefined};
             console.log([id,username,discriminator]);
         }catch(e){
             updateErrorMessage("Failed to connect Discord!");
@@ -46,13 +46,27 @@ function LoginComponent() {
             let resp = await fetch('http://localhost:5000/lemon/auth', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Access-Control-Expose-Headers': '*, Authorization',
+                    'Access-Control-Allow-Credentials': 'true',
+                    'Access-Control-Allow-Headers': 'Authorization'
                 },
                 body: JSON.stringify(credentials)
             })
             //So far 204 no content indicates a successful connection
-            if (resp.status === 204) {
-                console.log(resp.headers);
+            if (resp.status === 200) {
+               // let authorization = resp.body
+                //window.sessionStorage.setItem('Authorization', )
+                for(let headers of resp.headers) {
+                    console.log(headers);
+                }
+                console.log("after")
+                console.log(credentials);
+                let obj = resp.json();
+                await obj.then(e => credentials.token = e.token);
+                console.log(credentials);
+                console.log('break')
+                console.log(resp.headers['Authorization']);
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
                 //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');

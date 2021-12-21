@@ -2,6 +2,40 @@ import { ViewComponent } from "../view.js";
 import NavbarComponent from "../navbar/navbar.js";
 
 
+// TODO: 
+
+// For both of the following, the buttons should be rendered after getting a valid call to the API 
+// (specifically for the users_playlist roll = our wanted value)
+// 1) Create a button that only appears if a user is in a playlist they created/ have editing rights for
+// This button should then pull up a pop up menu that lets them add songs. This also means not all users will be able to edit public
+// playlists.
+
+// 2) Create a button that only appears for the creators of playlists to add users to that playlist. (Remember to float the label and button right)
+
+// 3) Make it to where public and private playlists can be collapsed/expanded in the nav bar on the left
+
+// 4) Update playlists from the API when songs are added/removed
+
+// 5) Pull playlists from the API
+
+// 6) Display the private playlists that belong to a user from the API with the proper role features
+// (OVERLAPS WITH EARLIER GOALS)
+
+// 7) Playlist deletion (Creators only)
+
+// 8) Make it to where adding a song is simplified to adding a song with just a URL, which then gets pushed through youtube's API
+//  to get the title + duration and push them as a new song to the LemonAPI
+
+// 9) Playing playlists from the API on the bot itself
+
+// 10) Display the playlist ID to make it easier for the discord bot to interface.
+
+
+
+// Bonus goals
+// 1) Moving everything out of dashboard into different components for clarity
+// 2) Pagination for playlist songs 
+// 3) Create playlists from the bot in discord (Essentially pushing the queue to the server)
 
 DashboardComponent.prototype = new ViewComponent('dashboard');
 function DashboardComponent() {

@@ -37,6 +37,7 @@ function LoginComponent() {
             let result=await resp.json();
             const {id, username, discriminator} = result;
             credentials={"id":id, "username":username,"discriminator":discriminator,"token":undefined};
+
             console.log([id,username,discriminator]);
         }catch(e){
             updateErrorMessage("Failed to connect Discord!");
@@ -53,9 +54,7 @@ function LoginComponent() {
 
             if (resp.status === 200) {
                 credentials.token=resp.headers.get('Authorization');
-                console.log(credentials);
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
-                //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');
             }
 

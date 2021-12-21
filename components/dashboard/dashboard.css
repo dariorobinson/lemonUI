@@ -17,6 +17,11 @@ img {
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
 }
+
+#addMyBtn {
+  float: right;
+}
+
 #addSongs {
   display: none;
   width: 100%;
@@ -38,6 +43,10 @@ img {
 }
 #username {
   color: cornflowerblue;
+}
+
+.playlist-item {
+  padding: 5%;
 }
 
 #sidebarMenu {
@@ -66,4 +75,8 @@ img {
 
 #playlistHeader {
   background-color: #212529;
+}
+
+#logoutLink {
+  bottom: 100px;
 }

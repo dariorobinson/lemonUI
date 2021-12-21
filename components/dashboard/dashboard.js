@@ -162,7 +162,7 @@ function DashboardComponent() {
         const output=[];
         sourceList.forEach((currentList)=>{
             output.push(`
-            <li><h6><a href="#" class="link-dark rounded">${currentList.name}</a></h6></li>
+            <li><h6><a href="#" class="link-dark rounded playlist-item" >${currentList.name}</a></h6></li>
             `)})
         listContainer.innerHTML=output.join('');
         //add Event Listener to every playlist name

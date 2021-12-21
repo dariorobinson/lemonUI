@@ -1,15 +1,5 @@
 <!--TODO: Move Navbar to navbar component -->
-<header id="navbar" class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Lemonwire</a>
-  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="navbar-nav">
-    <div class="nav-item text-nowrap">
-      <a class="nav-link px-3" href="http://127.0.0.1:5500/index.html">Sign out</a>
-    </div>
-  </div>
-</header>
+
 
 <div id="dashboardPage">
   <!-- Sidebar to display user information and  song lists you have-->
@@ -29,9 +19,9 @@
         <li>
           <button class="btn btn-default" id="addMyBtn" data-modal="modalOne">+</button>
         </li>
-        <li class="mb-1">
+        <li class="mb-1" id="myPlaylistList">
           <h4>
-          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#mylist-collapse" aria-expanded="true">
             My Playlists
           </button>
           </h4>
@@ -39,7 +29,7 @@
             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="songListName"></ul>
           </div>
         </li>
-        <li class="mb-1">
+        <li class="mb-1" id ="publicPlaylistList">
           <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
             Public Playlists
           </button>
@@ -48,6 +38,9 @@
             </ul>
           </div>
         </li>
+        <div class="nav-item text-nowrap" id="logout-link">
+          <a class="nav-link px-3" href="http://127.0.0.1:5500/index.html">Sign out</a>
+        </div>
       </ul>
     </div>
   </nav>

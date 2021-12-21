@@ -21,6 +21,7 @@ function LoginComponent() {
         //parse token information from fragment indentifier
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
+
         
         //if token missing raise error message
         if (!accessToken) {
@@ -36,7 +37,8 @@ function LoginComponent() {
             //obtain repsonse and save credentials
             let result=await resp.json();
             const {id, username, discriminator} = result;
-            credentials={"id":id, "username":username,"discriminator":discriminator, "token":undefined};
+            credentials={"id":id, "username":username,"discriminator":discriminator,"token":undefined};
+
             console.log([id,username,discriminator]);
         }catch(e){
             updateErrorMessage("Failed to connect Discord!");
@@ -50,10 +52,11 @@ function LoginComponent() {
                 },
                 body: JSON.stringify(credentials)
             })
-            //So far 204 no content indicates a successful connection
+
             if (resp.status === 200) {
-                credentials.token = resp.headers.get('Authorization');
+                credentials.token=resp.headers.get('Authorization');
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
+                console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');
             }
 

@@ -16,10 +16,10 @@ import NavbarComponent from "../navbar/navbar.js";
 
 // 4) Update playlists from the API when songs are added/removed
 
-// 5) Pull playlists from the API
+// -------------------------------------------------------------5) Pull playlists from the API
 
-// 6) Display the private playlists that belong to a user from the API with the proper role features
-// (OVERLAPS WITH EARLIER GOALS)
+// --------------------------------------------------------------6) Display the private playlists that belong to a user from the API with the proper role features
+//(OVERLAPS WITH EARLIER GOALS)
 
 // 7) Playlist deletion (Creators only)
 
@@ -28,7 +28,7 @@ import NavbarComponent from "../navbar/navbar.js";
 
 // 9) Playing playlists from the API on the bot itself
 
-// 10) Display the playlist ID to make it easier for the discord bot to interface.
+//---------------------------------------------------------------10) Display the playlist ID to make it easier for the discord bot to interface.
 
 
 
@@ -41,6 +41,8 @@ DashboardComponent.prototype = new ViewComponent('dashboard');
 function DashboardComponent() {
 
     let publicPlaylists;
+    let privatePlaylists;
+    let selectedPlaylist;
     //display component variables
     let addNewListBtn;
     let closeNewListBtn;
@@ -51,11 +53,13 @@ function DashboardComponent() {
     let submitNewSongBtn;
     let popupNewSong;
 
-    let selectedPlaylist;
+    let publicListBtn;
+ 
     //input field variables
 
     // User declaration
     let varUser = window.sessionStorage.getItem('authUser');
+    let user = (JSON.parse(varUser));
 
 
     //Getting Session Username and display on sidebar
@@ -67,6 +71,9 @@ function DashboardComponent() {
 
     //Modularize adding event listener process
     function buttonSetting(){
+        //List button fetching API to get playlists
+        publicListBtn=document.getElementById("PublicListBtn");
+        publicListBtn.addEventListener("click",loadPublic);
         //For adding new playlist pop up
         addNewListBtn=document.getElementById("addMyBtn");
         addNewListBtn.addEventListener("click",newListPop);
@@ -81,7 +88,7 @@ function DashboardComponent() {
         closeNewSongBtn.addEventListener("click",newSongHide);
         submitNewSongBtn=document.getElementById("submitNewSongBtn");
         submitNewSongBtn.addEventListener("click",addSongs);
-        
+           
     }
     //__________________Button Event Section_____________________
     function newListHide() {
@@ -115,8 +122,8 @@ function DashboardComponent() {
         let newURLField=document.getElementById("NewSongURLInput");
         let newURL=newURLField.value;
         
-        if(newURL){
-            let exist=false;
+        // if(newURL){
+        //     let exist=false;
             //check if playlist name occupied
             selectedPlaylist.songs.forEach((a)=>{if(a.song_url==newURL)exist=true;});
             if(!exist){
@@ -130,26 +137,49 @@ function DashboardComponent() {
                     );
                     loadSongs();                
                 }      
-            }
+            // }
             popupNewSong=document.getElementById("addSongs");
             popupNewSong.style.display='none';
-
+        
     }
 
-    function loadSongs(){
+    async function loadSongs(){
+        try {
+            //try to communicate with public list
+            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/getsongs`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': user.token
+                }
+            });
+            if (resp.status === 200) {
+                let data = await resp.json();
+                selectedPlaylist.songs=data;
+                console.log("here is the private list "+data);
+            }
+        } catch (e) {
+            console.error(e);
+            updateErrorMessage('Connection error!');
+        }
+
         console.log("loading songs");
+        //display Name
         let listN=document.getElementById("playlistname");
-        listN.innerHTML=selectedPlaylist.name;
+        listN.innerHTML=selectedPlaylist.name+" id : "+selectedPlaylist.id;
+        //DOM target of song table
         let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
         console.log(songsContainer);
         const output=[];
         selectedPlaylist.songs.forEach((a)=>{
             output.push(`
             <tr>
-                <td>${a.song_name}</td>
+                <td>${a.name}</td>
                 <td>${a.duration}</td>
-                <td>${a.song_url}</td>
+                <td>${a.url}</td>
+                <td><ion-icon name="close-outline"></ion-icon></td>
             </tr>
+            
             `)
         });
         songsContainer.innerHTML=output.join('');
@@ -171,13 +201,13 @@ function DashboardComponent() {
             let eventTarget = e.target;
             console.log(eventTarget.innerHTML);
             // assign selectedPlaylist for display
-            songlists.forEach((e)=>{
+            sourceList.forEach((e)=>{
                     if(e.name==eventTarget.innerHTML){selectedPlaylist=e;}
                 });
             loadSongs();
         });
-        
     }
+
     //Add and submit new playList
     async function addNewPlaylist(){
         console.log("adding in progress....");
@@ -186,8 +216,12 @@ function DashboardComponent() {
         let newListName=newPlaylistnameField.value;
         let newPlaylistDescriptionField=document.getElementById('DescriptionInput');
         let newListDescription=newPlaylistDescriptionField.value;
-        //assign the date as temp id;
-        let newListId=Date.now().toString();
+        let newAccessField = document.querySelector('input[type=checkbox]');
+        let newAccess="PRIVATE";
+        if(newAccessField.checked){
+            console.log("Works");
+            newAccess="PUBLIC";
+        }
         console.log("playlistname: "+newListName+" - description"+newListDescription);
         //Check if key info:newListName occur
         if(newListName){
@@ -195,68 +229,97 @@ function DashboardComponent() {
             let tempList={
                 name: newListName,
                 description: newListDescription,
-                access: "PUBLIC"
+                access: newAccess
             }
-            //check if playlist name occupied
-            songlists.forEach((a)=>{if(a.name==newListName)exist=true;});
-            if(!exist){ 
-                try {
+            try {
 
-                    let resp = await fetch('http://localhost:5000/lemon/playlists', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': varUser.token
-                        },
-                        body: JSON.stringify(tempList)
-                    })
-                    if (resp.status === 201) {
-                        console.log("OK");
-                        songlists.push(
+                let resp = await fetch('http://localhost:5000/lemon/playlists', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': user.token
+                    },
+                    body: JSON.stringify(tempList)
+                })
+                if (resp.status === 201) {
+                    let data=await resp.json();
+                    if(newAccess=="PRIVATE"){
+                        privatePlaylists.push(
                             {
-                                playlist_id : newListId,
+                                playlist_id : data.id,
                                 name : newListName,
                                 description : newListDescription,
-                                access_type : 1,
+                                access_type : newAccess,
                                 songs:[]
                             }
                         )
-                        console.log(songlists);     
-                        loadPlayList("songListName",songlists);                         
-                    }
-                } catch (e) {
-                    console.error(e);
-                    updateErrorMessage('Connection error!');
-                }         
+                        loadPrivate();
+                    }    
+                    else{
+                        publicPlaylists.push(
+                            {
+                                playlist_id : data.id,
+                                name : newListName,
+                                description : newListDescription,
+                                access_type : newAccess,
+                                songs:[]
+                            }
+                        )
+                        loadPublic();
+                    }                       
+                }
+            } catch (e) {
+                console.error(e);
+                updateErrorMessage('Connection error!');
+            }         
             }
             else {
                 updateErrorMessage('Playlist with that name already exists!');
             }      
-        }
         popupNewList=document.getElementById("addToMyList");
         popupNewList.style.display='none';
     }
-
+    async function loadPrivate(){
+        try {
+            //try to communicate with public list
+            let resp = await fetch('http://localhost:5000/lemon/playlists/private', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': user.token
+                }
+            });
+            if (resp.status === 200) {
+                let data = await resp.json();
+                privatePlaylists=data;
+                console.log("here is the private list "+privatePlaylists);
+                loadPlayList("privateListName",privatePlaylists);
+            }
+        } catch (e) {
+            console.error(e);
+            updateErrorMessage('Connection error!');
+        }
+    }
 
     async function loadPublic(){  
         console.log("loading public playlist");
+        console.log(user.token);
         try {
             //try to communicate with public list
             let resp = await fetch('http://localhost:5000/lemon/playlists/public', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': varUser.token
+                    'Authorization': user.token
                 }
             });
             if (resp.status === 200) {
                 let data = await resp.json();
                 console.log("here is the public list "+data);
-                let publicPlaylists=data;
+                publicPlaylists=data;
                 console.log(publicPlaylists);
                 loadPlayList("publicListName",publicPlaylists);
             }
-
         } catch (e) {
             console.error(e);
             updateErrorMessage('Connection error!');
@@ -267,14 +330,12 @@ function DashboardComponent() {
 
     this.render = function() {
         console.log("dashboard invoked");
-
         DashboardComponent.prototype.injectStyleSheet();
         DashboardComponent.prototype.injectTemplate(() => {
             // NavbarComponent.render();
             console.log("hello dashboard");
-            loadPublic();
-            loadPlayList("songListName",songlists);
-            let user = (JSON.parse(varUser));
+
+            loadPrivate();
             setUsername(user.username);
             //Button Setting
             buttonSetting();
@@ -282,9 +343,6 @@ function DashboardComponent() {
         
     }
 }
-
-
-
 
 //Hard coded sample 
 let songlists=[

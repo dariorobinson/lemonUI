@@ -55,6 +55,7 @@ function LoginComponent() {
             if (resp.status === 200) {
                 credentials.token=resp.headers.get('Authorization');
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
+                console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');
             }
 

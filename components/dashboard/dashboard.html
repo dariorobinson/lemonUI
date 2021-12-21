@@ -31,16 +31,16 @@
         </li>
         <li class="mb-1">
           <h4>
-          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+          <button id='PrivateListBtn' class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
             My Playlists
           </button>
           </h4>
           <div class="collapse show" id="mylist-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="songListName"></ul>
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="privateListName"></ul>
           </div>
         </li>
         <li class="mb-1">
-          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+          <button id='PublicListBtn' class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
             Public Playlists
           </button>
           <div class="collapse" id="dashboard-collapse">
@@ -87,6 +87,13 @@
               <label for="DescriptionInput">Description...</label>
               <textarea class="form-control" id="DescriptionInput" rows="3"></textarea>
             </div>
+          </br>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="access-type">
+            <label class="form-check-label" for="access-type">
+              Public
+            </label>
+          </div>
           </br>
             <button class="w-30 mb-2 btn btn-lg rounded-4 btn-primary" id="submitNewListBtn" style="margin-left: 40%;">add</button>
           </form>

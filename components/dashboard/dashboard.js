@@ -211,10 +211,11 @@ function DashboardComponent() {
             let resp = await fetch('http://localhost:5000/lemon/playlists/public', {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': varUser.token
                 }
             });
-            if (resp.status === 202) {
+            if (resp.status === 200) {
                 let data = await resp.json();
                 console.log("here is the public list "+data);
                 let publicPlaylists=data;

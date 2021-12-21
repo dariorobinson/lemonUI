@@ -36,7 +36,7 @@ function LoginComponent() {
             //obtain repsonse and save credentials
             let result=await resp.json();
             const {id, username, discriminator} = result;
-            credentials={"id":id, "username":username,"discriminator":discriminator};
+            credentials={"id":id, "username":username,"discriminator":discriminator,"token":undefined};
             console.log([id,username,discriminator]);
         }catch(e){
             updateErrorMessage("Failed to connect Discord!");
@@ -50,14 +50,10 @@ function LoginComponent() {
                 },
                 body: JSON.stringify(credentials)
             })
-            //So far 204 no content indicates a successful connection
-            if (resp.status === 204) {
-                let authKey;
-                console.log(resp.headers);
-                for(let entry of resp.headers.entries()) {
-                    console.log(entry);
-                  }
-                console.log("DEBUG: BREAK");
+
+            if (resp.status === 200) {
+                credentials.token=resp.headers.get('Authorization');
+                console.log(credentials);
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
                 //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');

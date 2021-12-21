@@ -51,6 +51,7 @@ img {
 
 #sidebarMenu {
   height: 100vh;
+  position: relative;
 }
 
 #listContainer {
@@ -77,6 +78,9 @@ img {
   background-color: #212529;
 }
 
-#logoutLink {
-  bottom: 100px;
+#logout-link {
+  position: absolute;
+  bottom: 0px;
+  margin-bottom: 25px;
+  font-size: larger;
 }

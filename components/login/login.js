@@ -46,17 +46,21 @@ function LoginComponent() {
             let resp = await fetch('http://localhost:5000/lemon/auth', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(credentials)
             })
             //So far 204 no content indicates a successful connection
             if (resp.status === 204) {
+                let authKey;
                 console.log(resp.headers);
+                for(let entry of resp.headers.entries()) {
+                    console.log(entry);
+                  }
+                console.log("DEBUG: BREAK");
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
                 //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');
-                
             }
 
         } catch (e) {

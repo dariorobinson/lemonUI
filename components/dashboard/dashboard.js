@@ -143,22 +143,24 @@ function DashboardComponent() {
     }
     //Add and submit new playList
     async function addNewPlaylist(){
-        console.log("adding in progress....")
+        console.log("adding in progress....");
+        //Getting fields of the pop up form
         let newPlaylistnameField = document.getElementById('NewListNameInput');
         let newListName=newPlaylistnameField.value;
         let newPlaylistDescriptionField=document.getElementById('DescriptionInput');
         let newListDescription=newPlaylistDescriptionField.value;
+        //assign the date as temp id;
         let newListId=Date.now().toString();
         console.log("playlistname: "+newListName+" - description"+newListDescription);
-        //Check if mandatory info:newListName occur
+        //Check if key info:newListName occur
         if(newListName){
             let exist=false;
-            //check if playlist name occupied
             let tempList={
                 name: newListName,
                 description: newListDescription,
                 access: "PUBLIC"
             }
+            //check if playlist name occupied
             songlists.forEach((a)=>{if(a.name==newListName)exist=true;});
             if(!exist){ 
                 try {
@@ -166,7 +168,8 @@ function DashboardComponent() {
                     let resp = await fetch('http://localhost:5000/lemon/playlists', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjMiLCJzdWIiOiJDcmVhdG9yVXNlciIsImlzcyI6ImxlbW9uIiwiZGlzY3JpbWluYXRvciI6IjMyMTQiLCJpYXQiOjE2NDAwNDEwNzQsImV4cCI6MTY0MDEyNzQ3NH0.SPf5JGqaODs_8dAbKxIwFdYDtQS3GL8NISqqGJ0WeCU '
                         },
                         body: JSON.stringify(tempList)
                     })
@@ -184,7 +187,6 @@ function DashboardComponent() {
                         console.log(songlists);     
                         loadPlayList("songListName",songlists);                         
                     }
-        
                 } catch (e) {
                     console.error(e);
                     updateErrorMessage('Connection error!');
@@ -250,7 +252,7 @@ let songlists=[
         playlist_id : "1111",
         name : "playlistTest",
         description : "This is a playlist of relaxing music",
-        access_type : 1,
+        access: 1,
         songs:[
             {
                 song_url:`https://www.youtube.com/watch?v=Rc5D2ubqqIY`,
@@ -343,7 +345,7 @@ let songlists=[
         playlist_id : "2222",
         name : "playlist2",
         description : "This is a playlist of relaxing music",
-        access_type : 1,
+        access: 1,
         songs:[
             {
                 song_url:`https://www.youtube.com/watch?v=Rc5D2ubqqIY`,
@@ -361,7 +363,7 @@ let songlists=[
         playlist_id : "3333",
         name : "playlist3",
         description : "This is a playlist of relaxing music",
-        access_type : 1,
+        access: 1,
         songs:[
             {
                 song_url:`https://www.youtube.com/watch?v=Rc5D2ubqqIY`,

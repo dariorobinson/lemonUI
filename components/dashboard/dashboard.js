@@ -20,6 +20,9 @@ function DashboardComponent() {
     let selectedPlaylist;
     //input field variables
 
+    // User declaration
+    let varUser = window.sessionStorage.getItem('authUser');
+
 
     //Getting Session Username and display on sidebar
     function setUsername(username){
@@ -101,8 +104,8 @@ function DashboardComponent() {
 
     function loadSongs(){
         console.log("loading songs");
-        // let listN=document.getElementById("playlistname");
-        // listN.innerHTML=selectedPlaylist.name;
+        let listN=document.getElementById("playlistname");
+        listN.innerHTML=selectedPlaylist.name;
         let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
         console.log(songsContainer);
         const output=[];
@@ -169,7 +172,7 @@ function DashboardComponent() {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjMiLCJzdWIiOiJDcmVhdG9yVXNlciIsImlzcyI6ImxlbW9uIiwiZGlzY3JpbWluYXRvciI6IjMyMTQiLCJpYXQiOjE2NDAwNDEwNzQsImV4cCI6MTY0MDEyNzQ3NH0.SPf5JGqaODs_8dAbKxIwFdYDtQS3GL8NISqqGJ0WeCU '
+                            'Authorization': varUser.token
                         },
                         body: JSON.stringify(tempList)
                     })
@@ -191,6 +194,9 @@ function DashboardComponent() {
                     console.error(e);
                     updateErrorMessage('Connection error!');
                 }         
+            }
+            else {
+                updateErrorMessage('Playlist with that name already exists!');
             }      
         }
         popupNewList=document.getElementById("addToMyList");
@@ -233,8 +239,7 @@ function DashboardComponent() {
             console.log("hello dashboard");
             loadPublic();
             loadPlayList("songListName",songlists);
-            let userObject = sessionStorage.getItem('authUser');
-            let user = (JSON.parse(userObject));
+            let user = (JSON.parse(varUser));
             setUsername(user.username);
             //Button Setting
             buttonSetting();

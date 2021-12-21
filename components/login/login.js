@@ -52,12 +52,8 @@ function LoginComponent() {
             })
             //So far 204 no content indicates a successful connection
             if (resp.status === 200) {
-                let authKey;
-                console.log(resp.headers);
                 credentials.token = resp.headers.get('Authorization');
-                console.log("DEBUG: BREAK");
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
-                //console.log(window.sessionStorage.getItem('authUser'));
                 router.navigate('/dashboard');
             }
 

@@ -65,12 +65,6 @@ img {
   float: left;
 }
 
-#addNewSongsBtn {
-  float: right;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
 #dashboardPage {
   background-color: #212529;
 }
@@ -101,22 +95,6 @@ img {
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
 }
-#invite-btn {
-  float: right;
-  margin-left:10px;
-  margin-right:10px;
-}
-#delete-Btn {
-  float: right;
-  margin-left:10px;
-  margin-right:10px;
-}
-
-#edit-btn{
-  float:right;
-  margin-left: 10px;
-  margin-right: 10px;
-}
 
 #edit-playlist{
   display: none;
@@ -128,7 +106,48 @@ img {
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
 }
-#access-div{
+#access-div {
   float: right;
-  padding-right: 10px;
+}
+
+/* BUTTONS AT THE TOP OF THE SCREEN */
+#buttonRow {
+  background-color: #212529;
+}
+/* Left buttons */
+#edit-Btn {
+  float: left;
+  color: white;
+  margin-top: 5px;
+}
+#addNewSongsBtn {
+  float: left;
+  color: white;
+  margin-top: 5px;
+}
+#share-list {
+  color: white;
+  margin-top: 5px;
+}
+
+/* Right buttons */
+#who-can-access-btn {
+  float: right;
+  color: white;
+  background-color: #2c3034;
+}
+#invite-btn {
+  float: right;
+  color: white;
+  background-color: #2c3034;
+}
+#delete-Btn {
+  float: right;
+  color: rgb(204, 2, 2);
+  background-color: #2c3034;
+}
+
+#delete-song {
+  float: right;
+  color: rgb(204, 2, 2);
 }

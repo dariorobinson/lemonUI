@@ -1,6 +1,6 @@
 import { ViewComponent } from "../view.js";
-import { Router } from "../../util/router.js";
 import router from '../../app.js';
+import getYTData from "../../util/youtube.js";
 
 
 // TODO: 
@@ -76,6 +76,13 @@ function DashboardComponent() {
     let deleteBtn;
     //Loading Public list drop down button
     let publicListBtn;
+
+    // Remove a song display components.
+    let removeSongBtn;
+    let popupRemoveSong;
+    let closeRemoveSongBtn;
+    let submitRemoveSongBtn;
+
     // Button for logout
     let logoutLink;
 
@@ -129,7 +136,9 @@ function DashboardComponent() {
         closeNewSongBtn=document.getElementById("newSongClose");
         closeNewSongBtn.addEventListener("click",newSongHide);
         submitNewSongBtn=document.getElementById("submitNewSongBtn");
-        submitNewSongBtn.addEventListener("click",addSongs);
+        submitNewSongBtn.addEventListener("click", addSongs);
+
+
 
         // For logging out of the current user
         logoutLink = document.getElementById("logoutClick");
@@ -196,6 +205,15 @@ function DashboardComponent() {
             popupEdit.style.display='block';
         }
     }
+    function removeSongHide() {
+        popupRemoveSong=document.getElementById("removeSongs");
+        popupRemoveSong.style.display='none';
+    }
+
+    function removeSongPop(){
+        popupRemoveSong=document.getElementById("removeSongs");
+        popupRemoveSong.style.display='block';
+    }
 
 
 
@@ -208,124 +226,22 @@ function DashboardComponent() {
         router.navigate('/login');
         return;
     }
-    // _____________________ AJAX TESTING ____________________
-    // same as $.ajax but settings can have a maskUI property
-    // if settings.maskUI==true, the UI will be blocked while ajax in progress
-    // if settings.maskUI is other than true, it's value will be used as the color value while bloking (i.e settings.maskUI='rgba(176,176,176,0.7)'
-    // in addition an hourglass is displayed while ajax in progress
-    function ajaxMaskUI(settings) {
-        function maskPageOn(color) { // color can be ie. 'rgba(176,176,176,0.7)' or 'transparent'
-            var div = $('#maskPageDiv');
-            if (div.length === 0) {
-                $(document.body).append('<div id="maskPageDiv" style="position:fixed;width:100%;height:100%;left:0;top:0;display:none"></div>'); // create it
-                div = $('#maskPageDiv');
-            }
-            if (div.length !== 0) {
-                div[0].style.zIndex = 2147483647;
-                div[0].style.backgroundColor=color;
-                div[0].style.display = 'inline';
-            }
-        }
-        function maskPageOff() {
-            var div = $('#maskPageDiv');
-            if (div.length !== 0) {
-                div[0].style.display = 'none';
-                div[0].style.zIndex = 'auto';
-            }
-        }
-        function hourglassOn() {
-            if ($('style:contains("html.hourGlass")').length < 1) $('<style>').text('html.hourGlass, html.hourGlass * { cursor: wait !important; }').appendTo('head');
-            $('html').addClass('hourGlass');
-        }
-        function hourglassOff() {
-            $('html').removeClass('hourGlass');
-        }
-
-        if (settings.maskUI===true) settings.maskUI='transparent';
-
-        if (!!settings.maskUI) {
-            maskPageOn(settings.maskUI);
-            hourglassOn();
-        }
-
-        var dfd = new $.Deferred();
-        $.ajax(settings)
-            .fail(function(jqXHR, textStatus, errorThrown) {
-                if (!!settings.maskUI) {
-                    maskPageOff();
-                    hourglassOff();
-                }
-                dfd.reject(jqXHR, textStatus, errorThrown);
-            }).done(function(data, textStatus, jqXHR) {
-                if (!!settings.maskUI) {
-                    maskPageOff();
-                    hourglassOff();
-                }
-                dfd.resolve(data, textStatus, jqXHR);
-            });
-
-        return dfd.promise();
-    }
-
+    
 
     //_____________Song Functionality_______________
-    async function getYTData(url){
-        // Construct an empty details item
-        let songDetails;
-        let id;
-        // First do a YT search in order to get the video's title
-        // Construct our request
-        const requestUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${url}&key=${youtubeKey}`;
-        // Create a fetch
-        await fetch(requestUrl)
-        .then(response => response.json())
-        .then(async data => { 
-            songDetails = {"title":data.items[0].snippet.title, "duration":undefined};
-            console.log("The title:" + songDetails.title);
-            id = data.items[0].id.videoId;
-        })
-
-        songDetails = {"title":songDetails.title, "duration":await getDuration(id)};
-        console.log(songDetails);
-        return songDetails;
-
-
-    }
-
-     async function getDuration(titleId){
-        //let respo = await fetch()
-        // Take the data from the previous search and use it to get the duration
-        let duration;
-        // Construct our query
-        const requestUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&maxResults=1&id=${titleId}&key=${youtubeKey}`;
-
-        // Perform a fetch
-        await fetch(requestUrl)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.items[0].contentDetails.duration);
-            duration = data.items[0].contentDetails.duration;
-        })
-
-        return duration;
-    }
-
-
     // Adds a song to the playlist
     async function addSongs(){
-        console.log("adding in progress....")
+        console.log("adding in progress....");
         
         // Get the URL from a user
         let newURLField=document.getElementById("NewSongURLInput");
         let newURL=newURLField.value;
-        console.log(newURL);
         
-      
+        console.log("Still here!");
         // Create a new song from the URL using Youtube's Data API
         let newSong = {"title":undefined, "duration":undefined};
         newSong = await getYTData(newURL);
         console.log("Here's the new song...");
-        console.log(newSong);   
 
         // Push the song to the playlist if we got a result
         if (newSong){
@@ -344,7 +260,6 @@ function DashboardComponent() {
             if (resp.status === 403) {
                 alert("Sorry, you don't have permissions to do that!");
             }
-            console.log(resp.status);
         }
         
         loadSongs();                
@@ -379,24 +294,74 @@ function DashboardComponent() {
         //display Name
         let listN=document.getElementById("playlistname");
         listN.innerHTML=selectedPlaylist.name;
+        /*
         let listId=document.getElementById("playlist-id");
         listId.innerHTML="ID: "+selectedPlaylist.id;
+        */
         //DOM target of song table
         let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
-        console.log(songsContainer);
         const output=[];
         selectedPlaylist.songs.forEach((a)=>{
             output.push(`
             <tr>
                 <td>${a.name}</td>
                 <td>${a.duration}</td>
-                <td>${a.url}</td>
+                <td id="url">${a.url}</td>
+                <td><button type="button" id="delete-song" class="btn btn-default" ><ion-icon name ="trash-outline"></ion-icon></i></button></td>
             </tr>
             `)
         });
         songsContainer.innerHTML=output.join('');
+
+        
+          
     }
 
+    async function addDelete(){
+        // Deletion logic
+        // When a user clicks the delete button...
+        $("#PlaylistTable").on("click", "button", async function(e) {
+            // Find the row it's on
+            var row = e.currentTarget.closest('tr');
+
+            // Target the name and URL
+            var songName = row.getElementsByTagName('td')[0].textContent;
+            var delURL = row.getElementsByTagName('td')[2].textContent;
+
+            // Confirm the delete
+            var retVal = confirm("Are you sure you want to delete " + songName + "? ");
+
+            // If they confirm it, log it and do it
+            if (retVal == true) {
+                console.log("User wants to delete: " + songName + " at " + delURL);
+                await deleteSong(delURL);
+            }
+          });
+    }
+
+    async function deleteSong(delURL){
+        // Turn the url into a structure we can easily turn into a json
+        let delTarget = {"songUrl":delURL};
+        
+        // Perform the API Call
+        // Patch, needs 'songUrl'
+        let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/removesong`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': user.token
+            },
+            body: JSON.stringify(delTarget)
+        });
+        // Perm check
+        if (resp.status === 403) {
+            alert("Sorry, you don't have permissions to do that!");
+        }
+
+        // Reload the songs and re-add the deletion buttons
+        loadSongs();
+        addDelete();
+    }
 
     //____________________________________ SOCIAL LOGIC __________________________________________
 
@@ -487,36 +452,48 @@ function DashboardComponent() {
                     if(e.id==eventTarget.id){selectedPlaylist=e;}
                 });
             loadSongs();
+            addDelete();
+
         });
     }
 
     //Delete play list function
     async function deletePlaylist(){
-        try {
-            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': user.token
+        // Confirm this is what they want to do
+        var dodel = confirm("Are you sure you want to delete " + selectedPlaylist.name + "?");
+        if (dodel == true){
+            try {
+                // If so, perform the API Call
+                let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': user.token
+                    }
+                });
+                // On an appropriate call, do the following
+                if (resp.status === 204) {
+                    //after delete reset selectedPlaylist
+                    selectedPlaylist=undefined;
+                    //reload playlists
+                    loadPrivate();
+                    loadPublic();
+                    //reload songs table
+                    let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
+                    songsContainer.innerHTML=null;
+                    //clear playlist name and id displayed above the table
+                    let listN=document.getElementById("playlistname");
+                    listN.innerHTML='';
+                    let listId=document.getElementById("playlist-id");
+                    listId.innerHTML='';
                 }
-            });
-            if (resp.status === 204) {
-                //after delete reset selectedPlaylist
-                selectedPlaylist=undefined;
-                //reload private playlist
-                loadPrivate();
-                //reload songs table
-                let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
-                songsContainer.innerHTML=null;
-                //clear playlist name and id displayed above the table
-                let listN=document.getElementById("playlistname");
-                listN.innerHTML='';
-                let listId=document.getElementById("playlist-id");
-                listId.innerHTML='';
+                if (resp.status = 403){
+                    alert("You don't have the permissions to delete " + selectedPlaylist.name + "!");
+                }
+            } catch (e) {
+                console.error(e);
+                updateErrorMessage('Connection error!');
             }
-        } catch (e) {
-            console.error(e);
-            updateErrorMessage('Connection error!');
         }
     }
     //Edit Playlist Information
@@ -688,10 +665,9 @@ function DashboardComponent() {
         // First things first, do we have a user?
         if (!window.sessionStorage.getItem("authUser")){
             // If not, go log them in
-            console.log("Navigating to logout?");
+            console.log("Navigating to logout");
             router.navigate('/login');
             return;
-            
         }
         console.log("dashboard invoked");
 
@@ -713,6 +689,7 @@ function DashboardComponent() {
         });
         
     }
+
 }
 
 export default new DashboardComponent();

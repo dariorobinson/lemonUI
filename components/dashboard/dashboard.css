@@ -66,9 +66,7 @@ img {
 }
 
 #addNewSongsBtn {
-  float: right;
-  margin-left: 10px;
-  margin-right: 10px;
+  float: left;
 }
 
 #dashboardPage {
@@ -91,6 +89,10 @@ img {
   float: left;
 }
 
+#delete-song {
+  float: right;
+}
+
 #invite-users {
   display: none;
   width: 100%;
@@ -103,22 +105,16 @@ img {
 }
 #invite-btn {
   float: right;
-  margin-left:10px;
-  margin-right:10px;
 }
 #delete-Btn {
   float: right;
-  margin-left:10px;
-  margin-right:10px;
 }
 
-#edit-Btn{
-  float:right;
-  margin-left: 10px;
-  margin-right: 10px;
+#edit-Btn {
+  float: left;
 }
 
-#delete-warning{
+#delete-warning {
   display: none;
   width: 100%;
   height: 100%;
@@ -128,7 +124,6 @@ img {
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
 }
-#access-div{
+#access-div {
   float: right;
-  padding-right: 10px;
 }

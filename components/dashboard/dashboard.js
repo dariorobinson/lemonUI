@@ -49,30 +49,43 @@ function DashboardComponent() {
     //Who can access for selectedPlaylist
     let whoList;
 
-    //display component variables
+    //___________display component variables_____________
+    // adding new list pop up
     let addNewListBtn;
     let closeNewListBtn;
     let submitNewListBtn;
     let popupNewList;
+    // adding new song pop up
     let addNewSongBtn;
     let closeNewSongBtn;
     let submitNewSongBtn;
     let popupNewSong;
+    // invite user pop up
+    let inviteBtn;
+    let closeInviteBtn;
+    let submitNewInviteBtn;
+    let popupNewInvite;
+    // edit playlist pop up
+    let editBtn;
+    let closeEditBtn;
+    let submitEditBtn;
+    let popupEdit;
+    //Who Can Access Btn
     let showAccessBtn;
-
+    //Delete play list Btn
+    let deleteBtn;
+    //Loading Public list drop down button
+    let publicListBtn;
     // Button for logout
     let logoutLink;
 
     // Key for youtube API requests
     let youtubeKey = 'AIzaSyBOtxA3v2ZiF7uZc854aNvtjznJ-qBezU0';
 
-    let publicListBtn;
-    let deleteBtn;
-    let inviteBtn;
-    let closeInviteBtn;
-    let submitNewInviteBtn;
-    let popupNewInvite;
-    //input field variables
+    
+    
+
+
 
     // User declaration
     let varUser = window.sessionStorage.getItem('authUser');
@@ -133,6 +146,14 @@ function DashboardComponent() {
         //Show who can access buttton
         showAccessBtn=document.getElementById("who-can-access-btn");
         showAccessBtn.addEventListener("click",showAccess);
+
+        //For edit playlist information
+        editBtn=document.getElementById("edit-btn");
+        editBtn.addEventListener("click",editPop);
+        closeEditBtn=document.getElementById("close-edit-btn");
+        closeEditBtn.addEventListener("click",editHide);
+        submitEditBtn=document.getElementById("submit-edit-btn");
+        submitEditBtn.addEventListener("click",editPlaylist);
     }
 
     //__________________Button Event Section_____________________
@@ -165,7 +186,16 @@ function DashboardComponent() {
         popupNewInvite=document.getElementById("invite-users");
         popupNewInvite.style.display='block';
     }
-
+    function editHide(){
+        popupEdit=document.getElementById("edit-playlist");
+        popupEdit.style.display='none';
+    }
+    function editPop(){
+        if(selectedPlaylist){
+            popupEdit=document.getElementById("edit-playlist");
+            popupEdit.style.display='block';
+        }
+    }
 
 
 
@@ -380,7 +410,6 @@ function DashboardComponent() {
         let newInvite={
             "username": inviteUsername,
             "discriminator": inviteDiscriminator,
-            "userRole": roleType
         }
         console.log(newInvite);
         try {
@@ -484,6 +513,47 @@ function DashboardComponent() {
                 listN.innerHTML='';
                 let listId=document.getElementById("playlist-id");
                 listId.innerHTML='';
+            }
+        } catch (e) {
+            console.error(e);
+            updateErrorMessage('Connection error!');
+        }
+    }
+    //Edit Playlist Information
+    async function editPlaylist(){
+        let editNameField=document.getElementById("edit-playlist-name");
+        let editName=editNameField.value;
+        let editDescriptionFeild=document.getElementById("edit-playlist-description");
+        let editDescription=editDescriptionFeild.value;
+        console.log(selectedPlaylist);
+        console.log(selectedPlaylist.access);
+        let newInfo={
+            name: editName,
+            description: editDescription,
+            access:selectedPlaylist.access
+        }
+        try {
+            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/editplaylist`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': user.token
+                },
+                body:JSON.stringify(newInfo)
+            });
+            if (resp.status === 200) {
+                console.log("Edit Done");
+                loadPrivate();
+                let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
+                songsContainer.innerHTML=null;
+                //clear playlist name and id displayed above the table
+                let listN=document.getElementById("playlistname");
+                listN.innerHTML='';
+                let listId=document.getElementById("playlist-id");
+                listId.innerHTML='';
+            }
+            else{
+                alert("You Don't have Access to do this action");
             }
         } catch (e) {
             console.error(e);

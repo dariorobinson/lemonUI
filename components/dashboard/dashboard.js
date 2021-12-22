@@ -1,5 +1,6 @@
 import { ViewComponent } from "../view.js";
-import NavbarComponent from "../navbar/navbar.js";
+import { Router } from "../../util/router.js";
+import router from '../../app.js';
 
 
 // TODO: 
@@ -53,14 +54,22 @@ function DashboardComponent() {
     let submitNewSongBtn;
     let popupNewSong;
 
+    // Button for logout
+    let logoutLink;
+
     let publicListBtn;
  
     //input field variables
 
     // User declaration
     let varUser = window.sessionStorage.getItem('authUser');
+    
     let user = (JSON.parse(varUser));
 
+    function updateErrorMessage(errorMsg) {
+        console.log('updateErrorMessage invoked');
+        console.log(errorMsg);
+    }
 
     //Getting Session Username and display on sidebar
     function setUsername(username){
@@ -84,7 +93,7 @@ function DashboardComponent() {
         submitNewListBtn=document.getElementById("submitNewListBtn");
         submitNewListBtn.addEventListener("click",addNewPlaylist);
 
-        
+
         //For adding new song pop up
         addNewSongBtn=document.getElementById("addNewSongsBtn");
         addNewSongBtn.addEventListener("click",newSongPop);
@@ -92,8 +101,13 @@ function DashboardComponent() {
         closeNewSongBtn.addEventListener("click",newSongHide);
         submitNewSongBtn=document.getElementById("submitNewSongBtn");
         submitNewSongBtn.addEventListener("click",addSongs);
+
+        // For logging out of the current user
+        logoutLink = document.getElementById("logoutClick");
+        logoutLink.addEventListener("click", logout);
            
     }
+
     //__________________Button Event Section_____________________
     function newListHide() {
         popupNewList=document.getElementById("addToMyList");
@@ -114,6 +128,15 @@ function DashboardComponent() {
             popupNewSong=document.getElementById("addSongs");
             popupNewSong.style.display='block';
         }
+    }
+
+    // __________________Logout button________________
+    function logout() {
+        console.log("Clearing the session, logging out!");
+        window.sessionStorage.clear();
+        window.history.replaceState({}, document.title, "/" + "login.html");
+        router.navigate('/login');
+        return;
     }
 
     //_____________Song Functionality_______________
@@ -169,10 +192,10 @@ function DashboardComponent() {
 
     function addSongs(){
         console.log("adding in progress....")
-        let newSongNameField = document.getElementById('NewSongNameInput');
-        let newSongName=newSongNameField.value;
-        let newDurationField=document.getElementById('NewDurationInput');
-        let newDuration=newDurationField.value;
+        // let newSongNameField = document.getElementById('NewSongNameInput');
+        // let newSongName=newSongNameField.value;
+        // let newDurationField=document.getElementById('NewDurationInput');
+        // let newDuration=newDurationField.value;
         let newURLField=document.getElementById("NewSongURLInput");
         let newURL=newURLField.value;
         
@@ -182,12 +205,12 @@ function DashboardComponent() {
             selectedPlaylist.songs.forEach((a)=>{if(a.song_url==newURL)exist=true;});
             if(!exist){
                     console.log(selectedPlaylist);
-                    //let newSong = getYTData(newURL);
+                    let newSong = getYTData(newURL);
                     selectedPlaylist.songs.push(
                         {
-                            song_url:newUrl,
-                            song_name: newSongName,
-                            duration: newDuration
+                            song_url:newSong.url,
+                            song_name: newSong.title,
+                            duration: newSong.duration
                         }
                     );
                     loadSongs();                
@@ -336,6 +359,7 @@ function DashboardComponent() {
         popupNewList=document.getElementById("addToMyList");
         popupNewList.style.display='none';
     }
+    // ________________ Private Playlists ____________________
     async function loadPrivate(){
         try {
             //try to communicate with public list
@@ -358,6 +382,8 @@ function DashboardComponent() {
         }
     }
 
+
+    // _______________ Public Playlists ___________________
     async function loadPublic(){  
         console.log("loading public playlist");
         console.log(user.token);
@@ -386,156 +412,29 @@ function DashboardComponent() {
 
 
     this.render = function() {
+        if (!window.sessionStorage.getItem("authUser")){
+            console.log("Navigating to logout?");
+            router.navigate('/login');
+            return;
+            
+        }
         console.log("dashboard invoked");
+        varUser = window.sessionStorage.getItem('authUser');
+        user = (JSON.parse(varUser));
+        console.log("Auth user fetched!");
         DashboardComponent.prototype.injectStyleSheet();
         DashboardComponent.prototype.injectTemplate(() => {
             // NavbarComponent.render();
             console.log("hello dashboard");
 
-            loadPrivate();
+            
             setUsername(user.username);
+            loadPrivate();
             //Button Setting
             buttonSetting();
         });
         
     }
 }
-
-//Hard coded sample 
-let songlists=[
-    {
-        playlist_id : "1111",
-        name : "playlistTest",
-        description : "This is a playlist of relaxing music",
-        access: 1,
-        songs:[
-            {
-                song_url:`https://www.youtube.com/watch?v=Rc5D2ubqqIY`,
-                song_name: "song1",
-                duration: "1:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song2",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song3",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song4",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song5",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song6",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song7",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song8",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song9",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song9",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song10",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song11",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song12",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song13",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song14",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song15",
-                duration: "2:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song16",
-                duration: "2:30"
-            }
-        ]        
-    },
-    {
-        playlist_id : "2222",
-        name : "playlist2",
-        description : "This is a playlist of relaxing music",
-        access: 1,
-        songs:[
-            {
-                song_url:`https://www.youtube.com/watch?v=Rc5D2ubqqIY`,
-                song_name: "song3",
-                duration: "3:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song4",
-                duration: "4:30"
-            }
-        ]   
-    },
-    {
-        playlist_id : "3333",
-        name : "playlist3",
-        description : "This is a playlist of relaxing music",
-        access: 1,
-        songs:[
-            {
-                song_url:`https://www.youtube.com/watch?v=Rc5D2ubqqIY`,
-                song_name: "song5",
-                duration: "5:30"
-            },
-            {
-                song_url:`https://www.youtube.com/watch?v=5qap5aO4i9A`,
-                song_name: "song6",
-                duration: "6:30"
-            }
-        ]   
-    }
-
-];
-
-
-
 
 export default new DashboardComponent();

@@ -23,10 +23,15 @@ function LoginComponent() {
         const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
 
         
-        //if token missing raise error message
-        if (!accessToken) {
-            return updateErrorMessage("Authorization Error: No Token founded in fragment");
+        let currAccessToken = window.sessionStorage.getItem('OAUTHToken');
+        if (!currAccessToken) {
+            //if token missing raise error message
+            if (!accessToken) {
+                return updateErrorMessage("Authorization Error: No Token founded in fragment");
+            }
+            window.sessionStorage.setItem('OAUTHToken', accessToken);
         }
+        
         //else if token occur: get user information
         try{//connect discord api
             let resp=await fetch('https://discord.com/api/users/@me', {
@@ -54,6 +59,7 @@ function LoginComponent() {
             })
 
             if (resp.status === 200) {
+                console.log("Setting Auth User!");
                 credentials.token=resp.headers.get('Authorization');
                 window.sessionStorage.setItem('authUser', JSON.stringify(credentials));
                 console.log(window.sessionStorage.getItem('authUser'));
@@ -77,13 +83,8 @@ function LoginComponent() {
             loginButtonElement = document.getElementById('login');
             //using bootstrap button class style
             loginButtonElement.setAttribute('class','btn btn-primary');
-        });
+        });     
         Login();
-
-        
-        
-
-
 
     }
 

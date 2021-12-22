@@ -46,6 +46,9 @@ function DashboardComponent() {
     let privatePlaylists;
     let selectedPlaylist;
 
+    //Who can access for selectedPlaylist
+    let whoList;
+
     //display component variables
     let addNewListBtn;
     let closeNewListBtn;
@@ -55,6 +58,7 @@ function DashboardComponent() {
     let closeNewSongBtn;
     let submitNewSongBtn;
     let popupNewSong;
+    let showAccessBtn;
 
     // Button for logout
     let logoutLink;
@@ -126,6 +130,9 @@ function DashboardComponent() {
         submitNewInviteBtn=document.getElementById("submit-invite-btn");
         submitNewInviteBtn.addEventListener("click",invite);
 
+        //Show who can access buttton
+        showAccessBtn=document.getElementById("who-can-access-btn");
+        showAccessBtn.addEventListener("click",showAccess);
     }
 
     //__________________Button Event Section_____________________
@@ -377,7 +384,7 @@ function DashboardComponent() {
         }
         console.log(newInvite);
         try {
-            let resp = await fetch(`http://localhost:5000/lemon/${selectedPlaylist.id}/adduser`, {
+            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/adduser`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -386,12 +393,48 @@ function DashboardComponent() {
                 body: JSON.stringify(newInvite)
                 
             });
-            if (resp.status === 200) {
+            if (resp.status === 204) {
                 console.log("Successfully added user to access this playlist")
             }
         } catch (e) {
             console.error(e);
             updateErrorMessage('Connection error!');
+        }
+    }
+
+    async function showAccess(){
+        if(selectedPlaylist){
+            whoList=undefined;
+            console.log("showing Who can Access");
+            try {
+                let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/getusers`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': user.token
+                    },                
+                });
+                if (resp.status === 200) {
+                    console.log("data obtained");
+                    //Get data and save who can access list as whoList
+                    let data= await resp.json();
+                    whoList=data;
+                    console.log(whoList);
+                    //display whoList information on the button drop down
+                    let whoDrop=document.getElementById("access-table");
+                    const output=[];
+                    whoList.forEach((e)=>{
+                        output.push(`
+                        <li><a href="#" class="dropdown-item" >
+                            ${e.username}#${e.discriminator}${e.userRole}
+                        </a></li>
+                        `)})
+                    whoDrop.innerHTML=output.join('');
+                }
+            } catch (e) {
+                console.error(e);
+                updateErrorMessage('Connection error!');
+            }
         }
     }
     // ___________________________________ PLAYLIST LOGIC ______________________________________________
@@ -402,7 +445,7 @@ function DashboardComponent() {
         const output=[];
         sourceList.forEach((currentList)=>{
             output.push(`
-            <li><h6><a href="#" class="link-dark rounded playlist-item" >${currentList.name}</a></h6></li>
+            <li><h6><a id=${currentList.id} href="#" class="link-dark rounded playlist-item" >${currentList.name}</a></h6></li>
             `)})
         listContainer.innerHTML=output.join('');
         //add Event Listener to every playlist name
@@ -412,7 +455,7 @@ function DashboardComponent() {
             console.log(eventTarget.innerHTML);
             // assign selectedPlaylist for display
             sourceList.forEach((e)=>{
-                    if(e.name==eventTarget.innerHTML){selectedPlaylist=e;}
+                    if(e.id==eventTarget.id){selectedPlaylist=e;}
                 });
             loadSongs();
         });

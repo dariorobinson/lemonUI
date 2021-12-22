@@ -276,7 +276,7 @@ function DashboardComponent() {
                 <td>${a.name}</td>
                 <td>${a.duration}</td>
                 <td id="url">${a.url}</td>
-                <td><button type="button" id="delete-song" class="btn btn-danger" ><ion-icon name ="trash-outline"></ion-icon></i></button></td>
+                <td><button type="button" id="delete-song" class="btn btn-default" ><ion-icon name ="trash-outline"></ion-icon></i></button></td>
             </tr>
             `)
         });

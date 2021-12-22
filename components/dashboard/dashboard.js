@@ -171,65 +171,7 @@ function DashboardComponent() {
         router.navigate('/login');
         return;
     }
-    // _____________________ AJAX TESTING ____________________
-    // same as $.ajax but settings can have a maskUI property
-    // if settings.maskUI==true, the UI will be blocked while ajax in progress
-    // if settings.maskUI is other than true, it's value will be used as the color value while bloking (i.e settings.maskUI='rgba(176,176,176,0.7)'
-    // in addition an hourglass is displayed while ajax in progress
-    function ajaxMaskUI(settings) {
-        function maskPageOn(color) { // color can be ie. 'rgba(176,176,176,0.7)' or 'transparent'
-            var div = $('#maskPageDiv');
-            if (div.length === 0) {
-                $(document.body).append('<div id="maskPageDiv" style="position:fixed;width:100%;height:100%;left:0;top:0;display:none"></div>'); // create it
-                div = $('#maskPageDiv');
-            }
-            if (div.length !== 0) {
-                div[0].style.zIndex = 2147483647;
-                div[0].style.backgroundColor=color;
-                div[0].style.display = 'inline';
-            }
-        }
-        function maskPageOff() {
-            var div = $('#maskPageDiv');
-            if (div.length !== 0) {
-                div[0].style.display = 'none';
-                div[0].style.zIndex = 'auto';
-            }
-        }
-        function hourglassOn() {
-            if ($('style:contains("html.hourGlass")').length < 1) $('<style>').text('html.hourGlass, html.hourGlass * { cursor: wait !important; }').appendTo('head');
-            $('html').addClass('hourGlass');
-        }
-        function hourglassOff() {
-            $('html').removeClass('hourGlass');
-        }
-
-        if (settings.maskUI===true) settings.maskUI='transparent';
-
-        if (!!settings.maskUI) {
-            maskPageOn(settings.maskUI);
-            hourglassOn();
-        }
-
-        var dfd = new $.Deferred();
-        $.ajax(settings)
-            .fail(function(jqXHR, textStatus, errorThrown) {
-                if (!!settings.maskUI) {
-                    maskPageOff();
-                    hourglassOff();
-                }
-                dfd.reject(jqXHR, textStatus, errorThrown);
-            }).done(function(data, textStatus, jqXHR) {
-                if (!!settings.maskUI) {
-                    maskPageOff();
-                    hourglassOff();
-                }
-                dfd.resolve(data, textStatus, jqXHR);
-            });
-
-        return dfd.promise();
-    }
-
+    
 
     //_____________Song Functionality_______________
     async function getYTData(url){

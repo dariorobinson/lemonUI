@@ -13,7 +13,7 @@ import router from '../../app.js';
 
 // 2) Create a button that only appears for the creators of playlists to add users to that playlist. (Remember to float the label and button right)
 
-// 3) Make it to where public and private playlists can be collapsed/expanded in the nav bar on the left
+// --------------------------------------------------------------3) Make it to where public and private playlists can be collapsed/expanded in the nav bar on the left
 
 // 4) Update playlists from the API when songs are added/removed
 
@@ -41,9 +41,11 @@ import router from '../../app.js';
 DashboardComponent.prototype = new ViewComponent('dashboard');
 function DashboardComponent() {
 
+    // Playlists
     let publicPlaylists;
     let privatePlaylists;
     let selectedPlaylist;
+
     //display component variables
     let addNewListBtn;
     let closeNewListBtn;
@@ -151,13 +153,15 @@ function DashboardComponent() {
                 key: 'AIzaSyAfCwtkvz55dNMTBE0uGiGitaMdRf9Erjg',
                 q: url,
                 maxResults: 1,
-                type: 'video'
+                type: 'video',
+                part: 'snippet',
+                videoEmbeddable:true,
             },
-            success: function(data){
-                songDetails = getDuration(data);
-                songData = {title:songDetails.title, duration:songDetails.duration, url:url};
-                console.log(songData);
-                return songData;
+            success: async function(data){
+                console.log(data.items[0]);
+                let songDetails = getDuration(data);
+                console.log(songDetails);
+                return songDetails;
             },
             error: function(response){
                 console.log("Request to pull youtube search failed...");
@@ -165,7 +169,7 @@ function DashboardComponent() {
         })
     }
 
-    function getDuration(titleData){
+    async function getDuration(titleData){
         //let respo = await fetch()
         // Take the data from the previous search and use it to get the duration
         $.ajax({
@@ -173,13 +177,14 @@ function DashboardComponent() {
             url: 'https://www.googleapis.com/youtube/v3/videos',
             data: {
                 key: 'AIzaSyAfCwtkvz55dNMTBE0uGiGitaMdRf9Erjg',
-                id: titleData.items[0].id,
-                part: contentDetails
+                id: titleData.items[0].id.videoId ,
+                part: "contentDetails" ,
+                maxResults:1
             },
-            success: function(data){
+            success: async function(data){
                 // Const to hold the values we care about
                 console.log(data.items[0].contentDetails.duration);
-                songDetails = {title:titleData.items[0].snippet.title, duration:data.items[0].contentDetails.duration};
+                let songDetails = {title:titleData.items[0].snippet.title, duration:data.items[0].contentDetails.duration};
                 console.log(songDetails);
                 return songDetails;
             },
@@ -190,7 +195,7 @@ function DashboardComponent() {
     }
 
 
-    function addSongs(){
+    async function addSongs(){
         console.log("adding in progress....")
         // let newSongNameField = document.getElementById('NewSongNameInput');
         // let newSongName=newSongNameField.value;
@@ -202,19 +207,17 @@ function DashboardComponent() {
         // if(newURL){
         //     let exist=false;
             //check if playlist name occupied
-            selectedPlaylist.songs.forEach((a)=>{if(a.song_url==newURL)exist=true;});
-            if(!exist){
-                    console.log(selectedPlaylist);
-                    let newSong = getYTData(newURL);
-                    selectedPlaylist.songs.push(
-                        {
-                            song_url:newSong.url,
-                            song_name: newSong.title,
-                            duration: newSong.duration
-                        }
-                    );
-                    loadSongs();                
-                }      
+            console.log(selectedPlaylist);
+            let newSong = getYTData(newURL);
+            selectedPlaylist.songs.push(
+                {
+                    song_url:newURL,
+                    song_name: newSong.title,
+                    duration: newSong.duration
+                }
+            );
+            loadSongs();                
+            
             // }
             popupNewSong=document.getElementById("addSongs");
             popupNewSong.style.display='none';
@@ -412,22 +415,27 @@ function DashboardComponent() {
 
 
     this.render = function() {
+        // First things first, do we have a user?
         if (!window.sessionStorage.getItem("authUser")){
+            // If not, go log them in
             console.log("Navigating to logout?");
             router.navigate('/login');
             return;
             
         }
         console.log("dashboard invoked");
+
+        // If they just logged in, then we need to change the authUser and user to reflect the new login
         varUser = window.sessionStorage.getItem('authUser');
         user = (JSON.parse(varUser));
         console.log("Auth user fetched!");
+
+        // Create our dashboard
         DashboardComponent.prototype.injectStyleSheet();
         DashboardComponent.prototype.injectTemplate(() => {
-            // NavbarComponent.render();
             console.log("hello dashboard");
 
-            
+            // Show our username, and the playlists available!
             setUsername(user.username);
             loadPrivate();
             //Button Setting

@@ -22,7 +22,6 @@ function LoginComponent() {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
 
-        
         let currAccessToken = window.sessionStorage.getItem('OAUTHToken');
         if (!currAccessToken) {
             //if token missing raise error message
@@ -31,6 +30,8 @@ function LoginComponent() {
             }
             window.sessionStorage.setItem('OAUTHToken', accessToken);
         }
+
+        
         
         //else if token occur: get user information
         try{//connect discord api

@@ -96,7 +96,7 @@ img {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-#delete-warning {
+#edit-playlist{
   display: none;
   width: 100%;
   height: 100%;
@@ -115,7 +115,7 @@ img {
   background-color: #212529;
 }
 /* Left buttons */
-#edit-Btn {
+#edit-btn{
   float: left;
   color: white;
   margin-top: 5px;

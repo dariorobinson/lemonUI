@@ -52,7 +52,7 @@
   <main id='listContainer'>
     
 <div id = "buttonRow">
-    <button id="edit-Btn" type="button" class="btn btn-default">
+    <button id="edit-btn" type="button" class="btn btn-default">
       <ion-icon name="pencil-outline"></ion-icon>
     </button>
     
@@ -183,26 +183,27 @@
         </div>
       </div>
     </div>
-    <div id="delete-warning" class="modal">
+    <!-- Edit Playlist name and description form -->
+    <div id="edit-playlist" class="modal">
       <div class="modal-dialog" role="document">
         <div class="modal-content rounded-5 shadow">
           <div class="modal-header p-5 pb-4 border-bottom-0">
-            <h2 class="fw-bold mb-0">Are you sure you want to delete the playlist?</h2>
+            <h2 class="fw-bold mb-0">Input New Information for Playlist</h2>
+            <button id="close-edit-btn"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-5 pt-0">
-            <form id="delete-form">
-            </br>
-              <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-secondary active">
-                  <input type="radio" name="options" id="YES" autocomplete="off" checked> Yes
-                </label>
-                <label class="btn btn-secondary">
-                  <input type="radio" name="options" id="NO" autocomplete="off"> Cancel
-                </label>
+            <form id="EditForm">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control rounded-4" id="edit-playlist-name" placeholder="">
+                <label for="edit-playlist-name">New Name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control rounded-4" id="edit-playlist-description" placeholder="">
+                <label for="edit-playlist-description">New Description</label>
               </div>
             </br>
             </br>
-              <button class="w-30 mb-2 btn btn-lg rounded-4 btn-primary" id="confirm-delete-btn" style="margin-left: 40%;">Confirm</button>
+              <button class="w-30 mb-2 btn btn-lg rounded-4 btn-primary" id="submit-edit-btn" style="margin-left: 40%;">Update</button>
             </form>
           </div>
         </div>

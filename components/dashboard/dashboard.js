@@ -184,7 +184,7 @@ function DashboardComponent() {
         popupRemoveSong.style.display='block';
     }
 
-
+ 
 
 
     // __________________Logout button________________
@@ -423,6 +423,7 @@ function DashboardComponent() {
                 });
             loadSongs();
             addDelete();
+            updateCopy();
 
         });
     }
@@ -538,6 +539,24 @@ function DashboardComponent() {
         popupNewList=document.getElementById("addToMyList");
         popupNewList.style.display='none';
     }
+
+    function updateCopy(){
+        $("#buttonRow").on("click", "button", async function(e) {
+            var btn = e.currentTarget;
+            if (btn.id == "share-list"){
+                
+                if (selectedPlaylist.id)
+                {
+                    // Give the user the current playlists' ID in their clipboard
+                    navigator.clipboard.writeText(selectedPlaylist.id);
+                    alert("Copied ID to clipboard!");
+                }
+                
+            }
+            
+          });
+    }
+    
     // ________________ Private Playlists ____________________
     async function loadPrivate(){
         try {

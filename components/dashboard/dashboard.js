@@ -56,6 +56,12 @@ function DashboardComponent() {
     let submitNewSongBtn;
     let popupNewSong;
 
+    // Remove a song display components.
+    let removeSongBtn;
+    let popupRemoveSong;
+    let closeRemoveSongBtn;
+    let submitRemoveSongBtn;
+
     // Button for logout
     let logoutLink;
 
@@ -114,6 +120,16 @@ function DashboardComponent() {
         submitNewSongBtn=document.getElementById("submitNewSongBtn");
         submitNewSongBtn.addEventListener("click",addSongs);
 
+        // For removing songs 
+        /*
+        removeSongBtn = document.getElementById("removeSongBtn");
+        removeSongBtn.addEventListener("click", removeSongPop);
+        closeRemoveSongBtn = document.getElementById("removeSongClose");
+        closeNewSongBtn.addEventListener("click", removeSongHide);
+        submitRemoveSongBtn = document.getElementById("suvmitRemoveSongBtn");
+        submitRemoveSongBtn.addEventListener("click", removeSong);
+        */
+
         // For logging out of the current user
         logoutLink = document.getElementById("logoutClick");
         logoutLink.addEventListener("click", logout);
@@ -125,6 +141,8 @@ function DashboardComponent() {
         closeInviteBtn.addEventListener("click",newInviteHide);
         submitNewInviteBtn=document.getElementById("submit-invite-btn");
         submitNewInviteBtn.addEventListener("click",invite);
+
+        
 
     }
 
@@ -159,6 +177,15 @@ function DashboardComponent() {
         popupNewInvite.style.display='block';
     }
 
+    function removeSongHide() {
+        popupRemoveSong=document.getElementById("removeSongs");
+        popupRemoveSong.style.display='none';
+    }
+
+    function removeSongPop(){
+        popupRemoveSong=document.getElementById("removeSongs");
+        popupRemoveSong.style.display='block';
+    }
 
 
 
@@ -186,12 +213,10 @@ function DashboardComponent() {
         .then(response => response.json())
         .then(async data => { 
             songDetails = {"title":data.items[0].snippet.title, "duration":undefined};
-            console.log("The title:" + songDetails.title);
             id = data.items[0].id.videoId;
         })
 
         songDetails = {"title":songDetails.title, "duration":await getDuration(id)};
-        console.log(songDetails);
         return songDetails;
 
 
@@ -208,7 +233,6 @@ function DashboardComponent() {
         await fetch(requestUrl)
         .then(response => response.json())
         .then(data => {
-            console.log(data.items[0].contentDetails.duration);
             duration = data.items[0].contentDetails.duration;
         })
 
@@ -223,14 +247,12 @@ function DashboardComponent() {
         // Get the URL from a user
         let newURLField=document.getElementById("NewSongURLInput");
         let newURL=newURLField.value;
-        console.log(newURL);
         
       
         // Create a new song from the URL using Youtube's Data API
         let newSong = {"title":undefined, "duration":undefined};
         newSong = await getYTData(newURL);
         console.log("Here's the new song...");
-        console.log(newSong);   
 
         // Push the song to the playlist if we got a result
         if (newSong){
@@ -249,7 +271,6 @@ function DashboardComponent() {
             if (resp.status === 403) {
                 alert("Sorry, you don't have permissions to do that!");
             }
-            console.log(resp.status);
         }
         
         loadSongs();                
@@ -288,20 +309,69 @@ function DashboardComponent() {
         listId.innerHTML="ID: "+selectedPlaylist.id;
         //DOM target of song table
         let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
-        console.log(songsContainer);
         const output=[];
         selectedPlaylist.songs.forEach((a)=>{
             output.push(`
             <tr>
                 <td>${a.name}</td>
                 <td>${a.duration}</td>
-                <td>${a.url}</td>
+                <td id="url">${a.url}</td>
+                <td><button type="button" id=delete-song class="btn btn-danger" ><ion-icon name ="trash-outline"></ion-icon></i></button></td>
             </tr>
             `)
         });
         songsContainer.innerHTML=output.join('');
+
+        
+          
     }
 
+    async function addDelete(){
+        // Deletion logic
+        // When a user clicks the delete button...
+        $("#PlaylistTable").on("click", "button", function(e) {
+            // Find the row it's on
+            var row = e.currentTarget.closest('tr');
+
+            // Target the name and URL
+            var songName = row.getElementsByTagName('td')[0].textContent;
+            var delURL = row.getElementsByTagName('td')[2].textContent;
+
+            // Confirm the delete
+            var retVal = confirm("Are you sure you want to delete " + songName + "? ");
+
+            // If they confirm it, log it and do it
+            if (retVal == true) {
+                console.log("User wants to delete: " + songName + " at " + delURL);
+                deleteSong(delURL);
+            }
+          });
+    }
+
+    async function deleteSong(delURL){
+        // Turn the url into a structure we can easily turn into a json
+        let delTarget = {"songUrl":delURL};
+        
+        // Perform the API Call
+        // Patch, needs 'songUrl'
+        let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/removesong`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': user.token
+            },
+            body: JSON.stringify(delTarget)
+        });
+        // Perm check
+        if (resp.status === 403) {
+            alert("Sorry, you don't have permissions to do that!");
+        }
+
+        // Reload the songs and re-add the deletion buttons
+        loadSongs();
+        addDelete();
+
+    }
 
     //____________________________________ SOCIAL LOGIC __________________________________________
 
@@ -357,6 +427,8 @@ function DashboardComponent() {
                     if(e.name==eventTarget.innerHTML){selectedPlaylist=e;}
                 });
             loadSongs();
+            addDelete();
+
         });
     }
 

@@ -90,6 +90,10 @@ img {
   float: left;
 }
 
+#delete-song {
+  float: right;
+}
+
 #invite-users {
   display: none;
   width: 100%;

@@ -118,17 +118,9 @@ function DashboardComponent() {
         closeNewSongBtn=document.getElementById("newSongClose");
         closeNewSongBtn.addEventListener("click",newSongHide);
         submitNewSongBtn=document.getElementById("submitNewSongBtn");
-        submitNewSongBtn.addEventListener("click",addSongs);
+        submitNewSongBtn.addEventListener("click", addSongs);
 
-        // For removing songs 
-        /*
-        removeSongBtn = document.getElementById("removeSongBtn");
-        removeSongBtn.addEventListener("click", removeSongPop);
-        closeRemoveSongBtn = document.getElementById("removeSongClose");
-        closeNewSongBtn.addEventListener("click", removeSongHide);
-        submitRemoveSongBtn = document.getElementById("suvmitRemoveSongBtn");
-        submitRemoveSongBtn.addEventListener("click", removeSong);
-        */
+
 
         // For logging out of the current user
         logoutLink = document.getElementById("logoutClick");
@@ -245,13 +237,13 @@ function DashboardComponent() {
 
     // Adds a song to the playlist
     async function addSongs(){
-        console.log("adding in progress....")
+        console.log("adding in progress....");
         
         // Get the URL from a user
         let newURLField=document.getElementById("NewSongURLInput");
         let newURL=newURLField.value;
         
-      
+        console.log("Still here!");
         // Create a new song from the URL using Youtube's Data API
         let newSong = {"title":undefined, "duration":undefined};
         newSong = await getYTData(newURL);
@@ -332,7 +324,7 @@ function DashboardComponent() {
     async function addDelete(){
         // Deletion logic
         // When a user clicks the delete button...
-        $("#PlaylistTable").on("click", "button", function(e) {
+        $("#PlaylistTable").on("click", "button", async function(e) {
             // Find the row it's on
             var row = e.currentTarget.closest('tr');
 
@@ -346,7 +338,7 @@ function DashboardComponent() {
             // If they confirm it, log it and do it
             if (retVal == true) {
                 console.log("User wants to delete: " + songName + " at " + delURL);
-                deleteSong(delURL);
+                await deleteSong(delURL);
             }
           });
     }
@@ -373,7 +365,6 @@ function DashboardComponent() {
         // Reload the songs and re-add the deletion buttons
         loadSongs();
         addDelete();
-
     }
 
     //____________________________________ SOCIAL LOGIC __________________________________________
@@ -437,9 +428,11 @@ function DashboardComponent() {
 
     //Delete play list function
     async function deletePlaylist(){
+        // Confirm this is what they want to do
         var dodel = confirm("Are you sure you want to delete " + selectedPlaylist.name + "?");
         if (dodel == true){
             try {
+                // If so, perform the API Call
                 let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
                     method: 'DELETE',
                     headers: {
@@ -447,6 +440,7 @@ function DashboardComponent() {
                         'Authorization': user.token
                     }
                 });
+                // On an appropriate call, do the following
                 if (resp.status === 204) {
                     //after delete reset selectedPlaylist
                     selectedPlaylist=undefined;
@@ -461,6 +455,9 @@ function DashboardComponent() {
                     listN.innerHTML='';
                     let listId=document.getElementById("playlist-id");
                     listId.innerHTML='';
+                }
+                if (resp.status = 403){
+                    alert("You don't have the permissions to delete " + selectedPlaylist.name + "!");
                 }
             } catch (e) {
                 console.error(e);
@@ -596,10 +593,9 @@ function DashboardComponent() {
         // First things first, do we have a user?
         if (!window.sessionStorage.getItem("authUser")){
             // If not, go log them in
-            console.log("Navigating to logout?");
+            console.log("Navigating to logout");
             router.navigate('/login');
             return;
-            
         }
         console.log("dashboard invoked");
 

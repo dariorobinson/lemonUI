@@ -59,6 +59,9 @@ function DashboardComponent() {
     // Button for logout
     let logoutLink;
 
+    // Key for youtube API requests
+    let youtubeKey = 'AIzaSyBOtxA3v2ZiF7uZc854aNvtjznJ-qBezU0';
+
     let publicListBtn;
  
     //input field variables
@@ -140,87 +143,150 @@ function DashboardComponent() {
         router.navigate('/login');
         return;
     }
+    // _____________________ AJAX TESTING ____________________
+    // same as $.ajax but settings can have a maskUI property
+    // if settings.maskUI==true, the UI will be blocked while ajax in progress
+    // if settings.maskUI is other than true, it's value will be used as the color value while bloking (i.e settings.maskUI='rgba(176,176,176,0.7)'
+    // in addition an hourglass is displayed while ajax in progress
+    function ajaxMaskUI(settings) {
+        function maskPageOn(color) { // color can be ie. 'rgba(176,176,176,0.7)' or 'transparent'
+            var div = $('#maskPageDiv');
+            if (div.length === 0) {
+                $(document.body).append('<div id="maskPageDiv" style="position:fixed;width:100%;height:100%;left:0;top:0;display:none"></div>'); // create it
+                div = $('#maskPageDiv');
+            }
+            if (div.length !== 0) {
+                div[0].style.zIndex = 2147483647;
+                div[0].style.backgroundColor=color;
+                div[0].style.display = 'inline';
+            }
+        }
+        function maskPageOff() {
+            var div = $('#maskPageDiv');
+            if (div.length !== 0) {
+                div[0].style.display = 'none';
+                div[0].style.zIndex = 'auto';
+            }
+        }
+        function hourglassOn() {
+            if ($('style:contains("html.hourGlass")').length < 1) $('<style>').text('html.hourGlass, html.hourGlass * { cursor: wait !important; }').appendTo('head');
+            $('html').addClass('hourGlass');
+        }
+        function hourglassOff() {
+            $('html').removeClass('hourGlass');
+        }
+
+        if (settings.maskUI===true) settings.maskUI='transparent';
+
+        if (!!settings.maskUI) {
+            maskPageOn(settings.maskUI);
+            hourglassOn();
+        }
+
+        var dfd = new $.Deferred();
+        $.ajax(settings)
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                if (!!settings.maskUI) {
+                    maskPageOff();
+                    hourglassOff();
+                }
+                dfd.reject(jqXHR, textStatus, errorThrown);
+            }).done(function(data, textStatus, jqXHR) {
+                if (!!settings.maskUI) {
+                    maskPageOff();
+                    hourglassOff();
+                }
+                dfd.resolve(data, textStatus, jqXHR);
+            });
+
+        return dfd.promise();
+    }
+
 
     //_____________Song Functionality_______________
     async function getYTData(url){
-
-
+        // Construct an empty details item
+        let songDetails;
+        let id;
         // First do a YT search in order to get the video's title
-        $.ajax({
-            type: 'GET',
-            url: 'https://www.googleapis.com/youtube/v3/search',
-            data: {
-                key: 'AIzaSyAfCwtkvz55dNMTBE0uGiGitaMdRf9Erjg',
-                q: url,
-                maxResults: 1,
-                type: 'video',
-                part: 'snippet',
-                videoEmbeddable:true,
-            },
-            success: async function(data){
-                console.log(data.items[0]);
-                let songDetails = getDuration(data);
-                console.log(songDetails);
-                return songDetails;
-            },
-            error: function(response){
-                console.log("Request to pull youtube search failed...");
-            }
+        // Construct our request
+        const requestUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${url}&key=${youtubeKey}`;
+        // Create a fetch
+        await fetch(requestUrl)
+        .then(response => response.json())
+        .then(async data => { 
+            songDetails = {"title":data.items[0].snippet.title, "duration":undefined};
+            console.log("The title:" + songDetails.title);
+            id = data.items[0].id.videoId;
         })
+
+        songDetails = {"title":songDetails.title, "duration":await getDuration(id)};
+        console.log(songDetails);
+        return songDetails;
+
+
     }
 
-    async function getDuration(titleData){
+     async function getDuration(titleId){
         //let respo = await fetch()
         // Take the data from the previous search and use it to get the duration
-        $.ajax({
-            type: 'GET',
-            url: 'https://www.googleapis.com/youtube/v3/videos',
-            data: {
-                key: 'AIzaSyAfCwtkvz55dNMTBE0uGiGitaMdRf9Erjg',
-                id: titleData.items[0].id.videoId ,
-                part: "contentDetails" ,
-                maxResults:1
-            },
-            success: async function(data){
-                // Const to hold the values we care about
-                console.log(data.items[0].contentDetails.duration);
-                let songDetails = {title:titleData.items[0].snippet.title, duration:data.items[0].contentDetails.duration};
-                console.log(songDetails);
-                return songDetails;
-            },
-            error: function(response){
-                console.log("Request to pull youtube video failed...");
-            }
+        let duration;
+        // Construct our query
+        const requestUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&maxResults=1&id=${titleId}&key=${youtubeKey}`;
+
+        // Perform a fetch
+        await fetch(requestUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.items[0].contentDetails.duration);
+            duration = data.items[0].contentDetails.duration;
         })
+
+        return duration;
     }
 
 
+    // Adds a song to the playlist
     async function addSongs(){
         console.log("adding in progress....")
-        // let newSongNameField = document.getElementById('NewSongNameInput');
-        // let newSongName=newSongNameField.value;
-        // let newDurationField=document.getElementById('NewDurationInput');
-        // let newDuration=newDurationField.value;
+        
+        // Get the URL from a user
         let newURLField=document.getElementById("NewSongURLInput");
         let newURL=newURLField.value;
+        console.log(newURL);
         
-        // if(newURL){
-        //     let exist=false;
-            //check if playlist name occupied
-            console.log(selectedPlaylist);
-            let newSong = getYTData(newURL);
-            selectedPlaylist.songs.push(
-                {
-                    song_url:newURL,
-                    song_name: newSong.title,
-                    duration: newSong.duration
-                }
-            );
-            loadSongs();                
+      
+        // Create a new song from the URL using Youtube's Data API
+        let newSong = {"title":undefined, "duration":undefined};
+        newSong = await getYTData(newURL);
+        console.log("Here's the new song...");
+        console.log(newSong);   
+
+        // Push the song to the playlist if we got a result
+        if (newSong){
+            let sendSong = {"songUrl": newURL, "name": newSong.title,
+                "duration": newSong.duration};
+            console.log(sendSong);
             
-            // }
-            popupNewSong=document.getElementById("addSongs");
-            popupNewSong.style.display='none';
+            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/addsong`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': user.token
+                },
+                body: JSON.stringify(sendSong)
+            });
+            if (resp.status === 403) {
+                alert("Sorry, you don't have permissions to do that!");
+            }
+            console.log(resp.status);
+        }
+        
+        loadSongs();                
+        
+        // }
+        popupNewSong=document.getElementById("addSongs");
+        popupNewSong.style.display='none';
         
     }
 

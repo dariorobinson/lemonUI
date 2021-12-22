@@ -77,17 +77,14 @@ function DashboardComponent() {
     //Loading Public list drop down button
     let publicListBtn;
 
-    // Remove a song display components.
-    let removeSongBtn;
-    let popupRemoveSong;
-    let closeRemoveSongBtn;
-    let submitRemoveSongBtn;
 
     // Button for logout
     let logoutLink;
 
     // Key for youtube API requests
     let youtubeKey = 'AIzaSyBOtxA3v2ZiF7uZc854aNvtjznJ-qBezU0';
+
+    
 
     
     
@@ -205,16 +202,7 @@ function DashboardComponent() {
             popupEdit.style.display='block';
         }
     }
-    function removeSongHide() {
-        popupRemoveSong=document.getElementById("removeSongs");
-        popupRemoveSong.style.display='none';
-    }
-
-    function removeSongPop(){
-        popupRemoveSong=document.getElementById("removeSongs");
-        popupRemoveSong.style.display='block';
-    }
-
+   
  
 
 
@@ -249,7 +237,7 @@ function DashboardComponent() {
                 "duration": newSong.duration};
             console.log(sendSong);
             
-            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/addsong`, {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}/addsong`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -274,7 +262,7 @@ function DashboardComponent() {
     async function loadSongs(){
         try {
             //try to communicate with public list
-            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/getsongs`, {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}/getsongs`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -345,7 +333,7 @@ function DashboardComponent() {
         
         // Perform the API Call
         // Patch, needs 'songUrl'
-        let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/removesong`, {
+        let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}/removesong`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -378,7 +366,7 @@ function DashboardComponent() {
         }
         console.log(newInvite);
         try {
-            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/adduser`, {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}/adduser`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -401,7 +389,7 @@ function DashboardComponent() {
             whoList=undefined;
             console.log("showing Who can Access");
             try {
-                let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/getusers`, {
+                let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}/getusers`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -465,7 +453,7 @@ function DashboardComponent() {
         if (dodel == true){
             try {
                 // If so, perform the API Call
-                let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
+                let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -511,7 +499,7 @@ function DashboardComponent() {
             access:selectedPlaylist.access
         }
         try {
-            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}/editplaylist`, {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/${selectedPlaylist.id}/editplaylist`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -562,7 +550,7 @@ function DashboardComponent() {
             }
             try {
 
-                let resp = await fetch('http://localhost:5000/lemon/playlists', {
+                let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -630,7 +618,7 @@ function DashboardComponent() {
     async function loadPrivate(){
         try {
             //try to communicate with public list
-            let resp = await fetch('http://localhost:5000/lemon/playlists/private', {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/private`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -656,7 +644,7 @@ function DashboardComponent() {
         console.log(user.token);
         try {
             //try to communicate with public list
-            let resp = await fetch('http://localhost:5000/lemon/playlists/public', {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/playlists/public`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

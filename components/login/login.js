@@ -7,6 +7,9 @@ function LoginComponent() {
     let loginButtonElement;
     let errorMessageElement;
 
+    // Target for the API endpoint
+    let lemonAPIEndpoint = 'http://lemonapiwebapp-env.eba-8cqvu5dm.us-west-1.elasticbeanstalk.com/'
+
 
     function updateErrorMessage(errorMsg) {
         console.log('updateErrorMessage invoked');
@@ -51,7 +54,7 @@ function LoginComponent() {
         }
         try {
             //Try to connect lemon API for login
-            let resp = await fetch('http://localhost:5000/lemon/auth', {
+            let resp = await fetch(`${lemonAPIEndpoint}/lemon/auth`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

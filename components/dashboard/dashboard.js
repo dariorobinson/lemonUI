@@ -63,7 +63,11 @@ function DashboardComponent() {
     let youtubeKey = 'AIzaSyBOtxA3v2ZiF7uZc854aNvtjznJ-qBezU0';
 
     let publicListBtn;
- 
+    let deleteBtn;
+    let inviteBtn;
+    let closeInviteBtn;
+    let submitNewInviteBtn;
+    let popupNewInvite;
     //input field variables
 
     // User declaration
@@ -89,7 +93,10 @@ function DashboardComponent() {
         publicListBtn=document.getElementById("PublicListBtn");
         publicListBtn.addEventListener("click",loadPublic);
 
-
+        //Delete List button
+        deleteBtn=document.getElementById("delete-Btn");
+        deleteBtn.addEventListener("click",deletePlaylist);
+        
         //For adding new playlist pop up
         addNewListBtn=document.getElementById("addMyBtn");
         addNewListBtn.addEventListener("click",newListPop);
@@ -111,6 +118,14 @@ function DashboardComponent() {
         logoutLink = document.getElementById("logoutClick");
         logoutLink.addEventListener("click", logout);
            
+        //For inviting new friend to access the playlist
+        inviteBtn=document.getElementById("invite-btn");
+        inviteBtn.addEventListener("click",newInvitePop);
+        closeInviteBtn=document.getElementById("new-invite-close-btn");
+        closeInviteBtn.addEventListener("click",newInviteHide);
+        submitNewInviteBtn=document.getElementById("submit-invite-btn");
+        submitNewInviteBtn.addEventListener("click",invite);
+
     }
 
     //__________________Button Event Section_____________________
@@ -134,6 +149,19 @@ function DashboardComponent() {
             popupNewSong.style.display='block';
         }
     }
+    function newInviteHide() {
+        popupNewInvite=document.getElementById("invite-users");
+        popupNewInvite.style.display='none';
+    }
+
+    function newInvitePop(){
+        popupNewInvite=document.getElementById("invite-users");
+        popupNewInvite.style.display='block';
+    }
+
+
+
+
 
     // __________________Logout button________________
     function logout() {
@@ -313,7 +341,9 @@ function DashboardComponent() {
         console.log("loading songs");
         //display Name
         let listN=document.getElementById("playlistname");
-        listN.innerHTML=selectedPlaylist.name+" id : "+selectedPlaylist.id;
+        listN.innerHTML=selectedPlaylist.name;
+        let listId=document.getElementById("playlist-id");
+        listId.innerHTML="ID: "+selectedPlaylist.id;
         //DOM target of song table
         let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
         console.log(songsContainer);
@@ -324,15 +354,46 @@ function DashboardComponent() {
                 <td>${a.name}</td>
                 <td>${a.duration}</td>
                 <td>${a.url}</td>
-                <td><ion-icon name="close-outline"></ion-icon></td>
             </tr>
-            
             `)
         });
         songsContainer.innerHTML=output.join('');
     }
 
 
+    //____________________________________ SOCIAL LOGIC __________________________________________
+
+    async function invite(){
+        let inviteUsernameField = document.getElementById("new-invite-username");
+        let inviteUsername=inviteUsernameField.value;
+        let inviteDiscriminatorField=document.getElementById("new-invite-discriminator");
+        let inviteDiscriminator=inviteDiscriminatorField.value;
+        let roleTypeField=document.querySelector('input[type=radio]');
+        let roleType=roleTypeField.id;
+        let newInvite={
+            "username": inviteUsername,
+            "discriminator": inviteDiscriminator,
+            "userRole": roleType
+        }
+        console.log(newInvite);
+        try {
+            let resp = await fetch(`http://localhost:5000/lemon/${selectedPlaylist.id}/adduser`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': user.token
+                },
+                body: JSON.stringify(newInvite)
+                
+            });
+            if (resp.status === 200) {
+                console.log("Successfully added user to access this playlist")
+            }
+        } catch (e) {
+            console.error(e);
+            updateErrorMessage('Connection error!');
+        }
+    }
     // ___________________________________ PLAYLIST LOGIC ______________________________________________
 
     //Take a playlist[] and a target HTML playlist container to display all available playlists
@@ -355,6 +416,36 @@ function DashboardComponent() {
                 });
             loadSongs();
         });
+    }
+
+    //Delete play list function
+    async function deletePlaylist(){
+        try {
+            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': user.token
+                }
+            });
+            if (resp.status === 204) {
+                //after delete reset selectedPlaylist
+                selectedPlaylist=undefined;
+                //reload private playlist
+                loadPrivate();
+                //reload songs table
+                let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
+                songsContainer.innerHTML=null;
+                //clear playlist name and id displayed above the table
+                let listN=document.getElementById("playlistname");
+                listN.innerHTML='';
+                let listId=document.getElementById("playlist-id");
+                listId.innerHTML='';
+            }
+        } catch (e) {
+            console.error(e);
+            updateErrorMessage('Connection error!');
+        }
     }
 
     //Add and submit new playList

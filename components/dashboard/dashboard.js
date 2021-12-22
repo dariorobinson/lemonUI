@@ -84,7 +84,8 @@ function DashboardComponent() {
     // Key for youtube API requests
     let youtubeKey = 'AIzaSyBOtxA3v2ZiF7uZc854aNvtjznJ-qBezU0';
 
-    
+    // Target for the API endpoint
+    let lemonAPIEndpoint = 'http://lemonapiwebapp-env.eba-8cqvu5dm.us-west-1.elasticbeanstalk.com/'
 
     
     

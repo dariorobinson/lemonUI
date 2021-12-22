@@ -22,7 +22,6 @@
         <li class="mb-1" id="myPlaylistList">
           <h4>
           <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#mylist-collapse" aria-expanded="true">
-
             My Playlists
           </button>
           </h4>
@@ -53,13 +52,21 @@
   <main id='listContainer'>
     <h2 id="playlistname"></h2>
     <button class="btn btn-default" id = "addNewSongsBtn"><h4>+</h4></button>
+    </br>
+    <h2 id="playlist-id"></h2>
+    <button id="invite-btn" type="button" class="btn btn-info">
+      <ion-icon name="person-add-outline"></ion-icon>
+    </button>
+    <button id="delete-Btn" type="button" class="btn btn-outline-danger">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
       <div id = "playlistHeader">
         <table  id="PlaylistTable" class="table table-striped table-dark">
           <thead>
             <tr>
-              <th scope="col" style="width: 10%">Song Name</th>
+              <th scope="col" style="width: 30%">Song Name</th>
               <th scope="col" style="width: 20">Duration</th>
-              <th scope="col" style="width: 70%">URL</th>
+              <th scope="col" style="width: 50%">URL</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -127,5 +134,40 @@
       </div>
     </div>
   </div>
+  <!-- Add new access user form -->
+    <div id="invite-users" class="modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-5 shadow">
+          <div class="modal-header p-5 pb-4 border-bottom-0">
+            <h2 class="fw-bold mb-0">Invite Friends to Access</h2>
+            <button id="new-invite-close-btn"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-5 pt-0">
+            <form id="NewInviteForm">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control rounded-4" id="new-invite-username" placeholder="Input Friend's Username">
+                <label for="new-invite-username">Username</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control rounded-4" id="new-invite-discriminator" placeholder="Input Friend's Discriminator">
+                <label for="new-invite-discriminator">Discriminator</label>
+              </div>
+            </br>
+              <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">
+                  <input type="radio" name="options" id="VIEWER" autocomplete="off" checked> VIEWER
+                </label>
+                <label class="btn btn-secondary">
+                  <input type="radio" name="options" id="EDITOR" autocomplete="off"> EDITOR
+                </label>
+              </div>
+            </br>
+            </br>
+              <button class="w-30 mb-2 btn btn-lg rounded-4 btn-primary" id="submit-invite-btn" style="margin-left: 40%;">Invite</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 

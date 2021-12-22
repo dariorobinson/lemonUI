@@ -526,8 +526,6 @@ function DashboardComponent() {
                 //clear playlist name and id displayed above the table
                 let listN=document.getElementById("playlistname");
                 listN.innerHTML='';
-                let listId=document.getElementById("playlist-id");
-                listId.innerHTML='';
             }
             else{
                 alert("You Don't have Access to do this action");

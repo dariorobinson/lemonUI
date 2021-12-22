@@ -201,6 +201,8 @@ function DashboardComponent() {
     
 
     //_____________Song Functionality_______________
+
+    // Calls the youtube API to get the title, constructs the final object
     async function getYTData(url){
         // Construct an empty details item
         let songDetails;
@@ -221,6 +223,7 @@ function DashboardComponent() {
 
 
     }
+
 
      async function getDuration(titleId){
         //let respo = await fetch()
@@ -316,7 +319,7 @@ function DashboardComponent() {
                 <td>${a.name}</td>
                 <td>${a.duration}</td>
                 <td id="url">${a.url}</td>
-                <td><button type="button" id=delete-song class="btn btn-danger" ><ion-icon name ="trash-outline"></ion-icon></i></button></td>
+                <td><button type="button" id="delete-song" class="btn btn-danger" ><ion-icon name ="trash-outline"></ion-icon></i></button></td>
             </tr>
             `)
         });
@@ -434,31 +437,35 @@ function DashboardComponent() {
 
     //Delete play list function
     async function deletePlaylist(){
-        try {
-            let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': user.token
+        var dodel = confirm("Are you sure you want to delete " + selectedPlaylist.name + "?");
+        if (dodel == true){
+            try {
+                let resp = await fetch(`http://localhost:5000/lemon/playlists/${selectedPlaylist.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': user.token
+                    }
+                });
+                if (resp.status === 204) {
+                    //after delete reset selectedPlaylist
+                    selectedPlaylist=undefined;
+                    //reload playlists
+                    loadPrivate();
+                    loadPublic();
+                    //reload songs table
+                    let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
+                    songsContainer.innerHTML=null;
+                    //clear playlist name and id displayed above the table
+                    let listN=document.getElementById("playlistname");
+                    listN.innerHTML='';
+                    let listId=document.getElementById("playlist-id");
+                    listId.innerHTML='';
                 }
-            });
-            if (resp.status === 204) {
-                //after delete reset selectedPlaylist
-                selectedPlaylist=undefined;
-                //reload private playlist
-                loadPrivate();
-                //reload songs table
-                let songsContainer=document.getElementById('PlaylistTable').getElementsByTagName('tbody')[0];
-                songsContainer.innerHTML=null;
-                //clear playlist name and id displayed above the table
-                let listN=document.getElementById("playlistname");
-                listN.innerHTML='';
-                let listId=document.getElementById("playlist-id");
-                listId.innerHTML='';
+            } catch (e) {
+                console.error(e);
+                updateErrorMessage('Connection error!');
             }
-        } catch (e) {
-            console.error(e);
-            updateErrorMessage('Connection error!');
         }
     }
 

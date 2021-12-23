@@ -372,7 +372,7 @@ function DashboardComponent() {
         let newInvite={
             "username": inviteUsername,
             "discriminator": inviteDiscriminator,
-            "roleRole": roleType
+            "userRole": roleType
         }
         console.log(newInvite);
         try {

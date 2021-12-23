@@ -306,25 +306,33 @@ function DashboardComponent() {
           
     }
 
+    // Variable that persists to track if function is running to prevent duplicates
+    var currRunning;
+
     async function addDelete(){
         // Deletion logic
         // When a user clicks the delete button...
         $("#PlaylistTable").on("click", "button", async function(e) {
-            // Find the row it's on
-            var row = e.currentTarget.closest('tr');
+            if (!currRunning) {
+                currRunning = true;
+                // Find the row it's on
+                var row = e.currentTarget.closest('tr');
 
-            // Target the name and URL
-            var songName = row.getElementsByTagName('td')[0].textContent;
-            var delURL = row.getElementsByTagName('td')[2].textContent;
+                // Target the name and URL
+                var songName = row.getElementsByTagName('td')[0].textContent;
+                var delURL = row.getElementsByTagName('td')[2].textContent;
 
-            // Confirm the delete
-            var retVal = confirm("Are you sure you want to delete " + songName + "? ");
+                // Confirm the delete
+                var retVal = confirm("Are you sure you want to delete " + songName + "? ");
 
-            // If they confirm it, log it and do it
-            if (retVal == true) {
-                console.log("User wants to delete: " + songName + " at " + delURL);
-                await deleteSong(delURL);
+                // If they confirm it, log it and do it
+                if (retVal == true) {
+                    console.log("User wants to delete: " + songName + " at " + delURL);
+                    await deleteSong(delURL);
+                }
+                currRunning = false;
             }
+            
           });
     }
 
@@ -598,18 +606,21 @@ function DashboardComponent() {
         popupNewList.style.display='none';
     }
 
-    function updateCopy(){
+    async function updateCopy(){
         $("#buttonRow").on("click", "button", async function(e) {
             var btn = e.currentTarget;
             if (btn.id == "share-list"){
-                
                 if (selectedPlaylist.id)
                 {
-                    // Give the user the current playlists' ID in their clipboard
-                    navigator.clipboard.writeText(selectedPlaylist.id);
-                    alert("Copied ID to clipboard!");
+                    if (!currRunning){
+                        currRunning = true;
+                        // Give the user the current playlists' ID in their clipboard
+                        await navigator.clipboard.writeText(selectedPlaylist.id);
+                        alert("Copied ID to clipboard!");
+                        currRunning = false;
+                    }
+                    
                 }
-                
             }
             
           });

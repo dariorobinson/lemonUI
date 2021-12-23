@@ -367,11 +367,12 @@ function DashboardComponent() {
         let inviteUsername=inviteUsernameField.value;
         let inviteDiscriminatorField=document.getElementById("new-invite-discriminator");
         let inviteDiscriminator=inviteDiscriminatorField.value;
-        let roleTypeField=document.querySelector('input[type=radio]');
+        let roleTypeField=document.querySelector('input[type=radio]:checked');
         let roleType=roleTypeField.id;
         let newInvite={
             "username": inviteUsername,
             "discriminator": inviteDiscriminator,
+            "roleType": roleType
         }
         console.log(newInvite);
         try {

@@ -328,7 +328,7 @@ function DashboardComponent() {
                 // If they confirm it, log it and do it
                 if (retVal == true) {
                     console.log("User wants to delete: " + songName + " at " + delURL);
-                    await deleteSong(delURL);
+                    deleteSong(delURL);
                 }
                 currRunning = false;
             }
@@ -615,7 +615,7 @@ function DashboardComponent() {
                     if (!currRunning){
                         currRunning = true;
                         // Give the user the current playlists' ID in their clipboard
-                        await navigator.clipboard.writeText(selectedPlaylist.id);
+                        navigator.clipboard.writeText(selectedPlaylist.id);
                         alert("Copied ID to clipboard!");
                         currRunning = false;
                     }
